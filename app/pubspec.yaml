@@ -47,6 +47,7 @@ dependencies:
   flutter_modular: ^5.0.3
   tap_debouncer: ^2.0.2
   getwidget: ^3.0.1
+  font_awesome_flutter: ^10.2.1
 
 dev_dependencies:
   flutter_test:

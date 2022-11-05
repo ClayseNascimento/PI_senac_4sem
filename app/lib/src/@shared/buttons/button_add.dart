@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:todolist/src/@shared/constants/todo_colors.dart';
-import 'package:todolist/src/@shared/icons/todo_list_icons.dart';
 
 class ButtonAdd extends StatelessWidget {
   final Function()? onTap;
@@ -25,7 +25,11 @@ class ButtonAdd extends StatelessWidget {
               },
               customBorder: const CircleBorder(),
               borderRadius: BorderRadius.circular(10),
-              child: Icon(TodoListIcons.add_circle, size: size, color: onTap != null ? TodoColors.azul : TodoColors.cinza,)),
+            child: Icon(
+              FontAwesomeIcons.circlePlus,
+              size: size,
+              color: onTap != null ? TodoColors.azul : TodoColors.cinza,
+            )),
         ),
       );
   }

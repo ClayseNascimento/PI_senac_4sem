@@ -10,6 +10,7 @@ class ToDoDialog extends StatelessWidget {
   final String? buttonRigthText;
   final Function()? buttonLeftOnTap;
   final Function()? buttonRigthOnTap;
+  final Widget? widget;
 
   const ToDoDialog({
     Key? key,
@@ -20,6 +21,7 @@ class ToDoDialog extends StatelessWidget {
     this.buttonRigthText,
     this.buttonLeftOnTap,
     this.buttonRigthOnTap,
+    this.widget,
   }) : super(key: key);
 
   @override
@@ -79,6 +81,10 @@ class ToDoDialog extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                   ),
+                  Padding(
+                    padding: EdgeInsets.all(widget != null ? 16.0 : 0),
+                    child: widget ?? const SizedBox.shrink(),
+                  ),
                   const Divider(color: TodoColors.azul, height: 2),
                   IntrinsicHeight(
                     child: Row(
@@ -87,9 +93,9 @@ class ToDoDialog extends StatelessWidget {
                       children: [
                         Expanded(
                           child: InkWell(
-                             onTap: () {
-                                    if (buttonLeftOnTap != null) buttonLeftOnTap!();
-                                  },
+                            onTap: () {
+                              if (buttonLeftOnTap != null) buttonLeftOnTap!();
+                            },
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 16.0),
                               child: Text(
@@ -99,7 +105,6 @@ class ToDoDialog extends StatelessWidget {
                                   fontWeight: FontWeight.w400,
                                   color: TodoColors.preto,
                                   decoration: TextDecoration.none,
-
                                 ),
                                 textAlign: TextAlign.center,
                                 maxLines: 2,
@@ -113,9 +118,9 @@ class ToDoDialog extends StatelessWidget {
                         ),
                         Expanded(
                           child: InkWell(
-                             onTap: () {
-                                    if (buttonRigthOnTap != null) buttonRigthOnTap!();
-                                  },
+                            onTap: () {
+                              if (buttonRigthOnTap != null) buttonRigthOnTap!();
+                            },
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 16.0),
                               child: Text(
@@ -126,7 +131,7 @@ class ToDoDialog extends StatelessWidget {
                                   color: TodoColors.preto,
                                   decoration: TextDecoration.none,
                                 ),
-                                 textAlign: TextAlign.center,
+                                textAlign: TextAlign.center,
                                 maxLines: 2,
                               ),
                             ),

@@ -40,9 +40,9 @@ class Button {
               }),
               textStyle: MaterialStateProperty.resolveWith<TextStyle>((states) {
                 if (states.contains(MaterialState.disabled)) {
-                  return GoogleFonts.workSans(fontSize: 16, fontWeight: FontWeight.bold);
+                  return GoogleFonts.roboto(fontSize: 16, fontWeight: FontWeight.bold);
                 }
-                return GoogleFonts.workSans(fontSize: 16, fontWeight: FontWeight.bold);
+                return GoogleFonts.roboto(fontSize: 16, fontWeight: FontWeight.bold);
               }),
               elevation: MaterialStateProperty.resolveWith<double>((states) {
                 if (states.contains(MaterialState.disabled)) return 0.0;

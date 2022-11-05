@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:todolist/src/@shared/constants/todo_colors.dart';
 import 'package:todolist/src/@shared/icons/todo_list_icons.dart';
@@ -35,7 +36,7 @@ class ButtonsBar extends StatelessWidget {
                 Modular.to.navigate('${TarefasModule.novaTarefa}/'),
               label: 'Criar',
               icon: const Icon(
-                TodoListIcons.add_circle,
+                FontAwesomeIcons.circlePlus,
                 color: TodoColors.azul,
                 size: 40,
               ),
@@ -71,9 +72,9 @@ class ButtonsBar extends StatelessWidget {
                 Modular.to.navigate('${TarefasModule.novaTarefa}/'),
               label: 'Criar',
               icon: const Icon(
-                TodoListIcons.add_circle,
+                FontAwesomeIcons.circlePlus,
                 color: TodoColors.azul,
-                size: 40,
+                size: 32,
               ),
             ),
             _buildButtonBar(

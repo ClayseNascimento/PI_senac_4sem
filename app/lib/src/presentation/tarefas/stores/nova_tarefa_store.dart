@@ -1,6 +1,9 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:reactive_forms/reactive_forms.dart';
+import 'package:todolist/src/@shared/alerts/todo_dialog.dart';
+import 'package:todolist/src/@shared/inputs/text_input.dart';
 import 'package:todolist/src/@shared/state/stores.dart';
-
 
 class NovaTarefaStore extends TDStore<String> {
   // -------------- Controller input--------------------
@@ -20,8 +23,13 @@ class NovaTarefaStore extends TDStore<String> {
 
   String nameTask = 'Criar tarefa';
   List<String> listItens = [];
+  bool showOptionsItens = false;
+  bool showEllipsis = true;
+  int indexItem = -1;
 
-  setNameTask() {
+  setStateInitial() {
+    setLoading();
+    showOptionsItens = false;
     setState(nameTask);
   }
 
@@ -37,7 +45,6 @@ class NovaTarefaStore extends TDStore<String> {
     if (isValid) {
       nameTask = nameTaskControl.value!;
     }
-
     setState(nameTask);
   }
 
@@ -57,6 +64,106 @@ class NovaTarefaStore extends TDStore<String> {
       setState(itemTaskControl.value ?? '');
     }
 
+    setStateInitial();
+    setState(itemTaskControl.value ?? '');
+  }
+
+  // ------ Exibir opções de editar e excluir -----
+  showEditOrDelete(String element) {
+    setLoading();
+    showOptionsItens = true;
+    indexItem = listItens.indexOf(element);
+    setState(itemTaskControl.value ?? '');
+  }
+
+  // ------ Função para editar item da tarefa ------
+  editItemTask(BuildContext context, String element) {
+    setLoading();
+    itemTaskControl.value = element;
+    indexItem = listItens.indexOf(element);
+    ToDoDialog(
+      context: context,
+      title: 'Editar',
+      content: 'Informe o novo texto para essa tarefa',
+      buttonLeftText: 'Confirmar',
+      buttonRigthText: 'Cancelar',
+      buttonLeftOnTap: () {
+        setLoading();
+        listItens[indexItem] = itemTaskControl.value!;
+        indexItem = listItens.indexOf(element);
+        showOptionsItens = false;
+        showEllipsis = true;
+        itemTaskControl.reset();
+        setState(itemTaskControl.value ?? '');
+        Modular.to.pop();
+      },
+      buttonRigthOnTap: () {
+        setLoading();
+        indexItem = -1;
+        showOptionsItens = false;
+        showEllipsis = true;
+        setState(itemTaskControl.value ?? '');
+        Modular.to.pop();
+      },
+      widget: Padding(
+        padding: const EdgeInsets.only(top: 16.0),
+        child: Material(
+          child: ReactiveForm(
+            formGroup: form,
+            child: TextInput(
+              onTap: (() => setStateInitial()),
+              formControl: itemTaskControl,
+              hintText: 'Adicionar novo item',
+              onSubmitted: () {
+                setLoading();
+                listItens[indexItem] = itemTaskControl.value!;
+                indexItem = listItens.indexOf(element);
+                showOptionsItens = false;
+                showEllipsis = true;
+                itemTaskControl.reset();
+                setState(itemTaskControl.value ?? '');
+                Modular.to.pop();
+              },
+              validationMessages: const {
+                'required': 'Favor informar um item para essa tarefa',
+              },
+            ),
+          ),
+        ),
+      ),
+    ).show();
+    setState(itemTaskControl.value ?? '');
+  }
+
+  // ------ Função para excluir item da tarefa ------
+  deleteItemTask(BuildContext context, String element) {
+    setLoading();
+    indexItem = listItens.indexOf(element);
+    ToDoDialog(
+      context: context,
+      title: 'Deletar',
+      content: 'Você gostaria de deletar esse item?',
+      buttonLeftText: 'Sim',
+      buttonRigthText: 'Não',
+      buttonLeftOnTap: () {
+        setLoading();
+        indexItem = listItens.indexOf(element);
+        listItens.removeAt(indexItem);
+        showOptionsItens = false;
+        showEllipsis = true;
+        indexItem = -1;
+        setState(itemTaskControl.value ?? '');
+        Modular.to.pop();
+      },
+      buttonRigthOnTap: () {
+        setLoading();
+        indexItem = -1;
+        showOptionsItens = false;
+        showEllipsis = true;
+        setState(itemTaskControl.value ?? '');
+        Modular.to.pop();
+      },
+    ).show();
     setState(itemTaskControl.value ?? '');
   }
 }

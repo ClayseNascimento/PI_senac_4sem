@@ -21,17 +21,19 @@ class _CheckboxTileState extends State<CheckboxTile> {
 
     return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
       return Material(
+        color: TodoColors.transparent,
         child: Row(
           children: [
             GFCheckbox(
               activeBgColor: TodoColors.verde,
-              size: 22,
+              size: 20,
               type: GFCheckboxType.circle,
               onChanged: (value) {
                 setState(() {
                   isChecked = value;
                 });
               },
+              activeIcon: const Icon(Icons.check, size: 16, color: GFColors.WHITE),
               value: isChecked,
               inactiveIcon: null,
             ),
@@ -42,11 +44,10 @@ class _CheckboxTileState extends State<CheckboxTile> {
                 fontSize: 16,
                 color: TodoColors.preto,
               ),
-            )
+            ),
           ],
         ),
       );
     });
-
   }
 }
