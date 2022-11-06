@@ -126,7 +126,10 @@ class _NovaTarefaPageState extends ModularState<NovaTarefaPage, NovaTarefaStore>
                                                   visible: store.showOptionsItens &&
                                                       store.indexItem == store.listItens.indexOf(e),
                                                   child: InkWell(
-                                                    onTap: () => store.editItemTask(context, e),
+                                                    onTap: () {
+                                                      store.indexItem = store.listItens.indexOf(e);
+                                                      store.editItemTask(context, e);
+                                                    },
                                                     child: const Icon(
                                                       FontAwesomeIcons.pencil,
                                                       color: TodoColors.azul,
@@ -200,7 +203,7 @@ class _NovaTarefaPageState extends ModularState<NovaTarefaPage, NovaTarefaStore>
               sizes: 'col-md-3 col-6',
               child: const Button(
                 text: 'Salvar',
-                // onPressed: () {},
+                // onPressed: () => store.saveCardsTarefas(),
               ).primario),
         ],
       ),

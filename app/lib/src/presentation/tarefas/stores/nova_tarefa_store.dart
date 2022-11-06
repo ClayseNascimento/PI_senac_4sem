@@ -4,6 +4,7 @@ import 'package:reactive_forms/reactive_forms.dart';
 import 'package:todolist/src/@shared/alerts/todo_dialog.dart';
 import 'package:todolist/src/@shared/inputs/text_input.dart';
 import 'package:todolist/src/@shared/state/stores.dart';
+import 'package:todolist/src/presentation/home/home_module.dart';
 
 class NovaTarefaStore extends TDStore<String> {
   // -------------- Controller input--------------------
@@ -26,9 +27,11 @@ class NovaTarefaStore extends TDStore<String> {
   bool showOptionsItens = false;
   bool showEllipsis = true;
   int indexItem = -1;
+  Map<String, Object> listTarefas = {};
 
   setStateInitial() {
     setLoading();
+    indexItem = -1;
     showOptionsItens = false;
     setState(nameTask);
   }
@@ -71,8 +74,8 @@ class NovaTarefaStore extends TDStore<String> {
   // ------ Exibir opções de editar e excluir -----
   showEditOrDelete(String element) {
     setLoading();
-    showOptionsItens = true;
     indexItem = listItens.indexOf(element);
+    showOptionsItens = true;
     setState(itemTaskControl.value ?? '');
   }
 
@@ -89,11 +92,12 @@ class NovaTarefaStore extends TDStore<String> {
       buttonRigthText: 'Cancelar',
       buttonLeftOnTap: () {
         setLoading();
-        listItens[indexItem] = itemTaskControl.value!;
         indexItem = listItens.indexOf(element);
+        listItens[indexItem] = itemTaskControl.value!;
         showOptionsItens = false;
         showEllipsis = true;
         itemTaskControl.reset();
+        indexItem = -1;
         setState(itemTaskControl.value ?? '');
         Modular.to.pop();
       },
@@ -102,6 +106,7 @@ class NovaTarefaStore extends TDStore<String> {
         indexItem = -1;
         showOptionsItens = false;
         showEllipsis = true;
+        itemTaskControl.reset();
         setState(itemTaskControl.value ?? '');
         Modular.to.pop();
       },
@@ -116,8 +121,8 @@ class NovaTarefaStore extends TDStore<String> {
               hintText: 'Adicionar novo item',
               onSubmitted: () {
                 setLoading();
-                listItens[indexItem] = itemTaskControl.value!;
                 indexItem = listItens.indexOf(element);
+                listItens[indexItem] = itemTaskControl.value!;
                 showOptionsItens = false;
                 showEllipsis = true;
                 itemTaskControl.reset();
@@ -165,6 +170,19 @@ class NovaTarefaStore extends TDStore<String> {
       },
     ).show();
     setState(itemTaskControl.value ?? '');
+  }
+
+  // ----- Função para salvar um card de tarefas -----
+  saveCardsTarefas() {
+    setLoading();
+    listTarefas = {
+      'Titulo tarefa': nameTask,
+      'itens tarefa': {
+        listItens,
+      }
+    };
+    Modular.to.pushNamed(HomeModule.home);
+    setState('');
   }
 }
 

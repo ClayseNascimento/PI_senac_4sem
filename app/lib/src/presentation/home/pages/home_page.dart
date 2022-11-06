@@ -55,6 +55,18 @@ class _HomePageState extends State<HomePage> {
                 'assets/images/empty.svg',
               ),
             ),
+            const SizedBox(height: 24),
+            Text(
+              'Você não possui tarefas.',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.roboto(
+                fontSize: 32,
+                fontWeight: FontWeight.w400,
+                color: TodoColors.azul,
+                decoration: TextDecoration.none,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
           ],
         ),
       ),
