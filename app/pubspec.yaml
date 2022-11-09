@@ -36,6 +36,8 @@ dependencies:
   rx_notifier: 1.1.0
   dartz: 0.10.1
   equatable: 2.0.5
+  carousel_slider: 4.1.1
+  smooth_page_indicator: 1.0.0+2
 
 
   # The following adds the Cupertino Icons font to your application.

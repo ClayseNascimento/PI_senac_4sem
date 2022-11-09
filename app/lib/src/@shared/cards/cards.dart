@@ -32,7 +32,7 @@ class _CardsState extends State<Cards> {
       child: Align(
         alignment: Alignment.bottomCenter,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16),
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceAround,
