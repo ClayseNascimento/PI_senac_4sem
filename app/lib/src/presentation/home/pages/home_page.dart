@@ -1,7 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:getwidget/components/carousel/gf_carousel.dart';
+import 'package:getwidget/components/loader/gf_loader.dart';
+import 'package:getwidget/types/gf_loader_type.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:todolist/src/@shared/bars/buttons_bar.dart';
@@ -11,6 +12,7 @@ import 'package:todolist/src/@shared/cards/cards.dart';
 import 'package:todolist/src/@shared/constants/todo_colors.dart';
 import 'package:todolist/src/@shared/state/modular_state.dart';
 import 'package:todolist/src/@shared/state/state_mixin.dart';
+import 'package:todolist/src/domain/entities/tarefas.dart';
 import 'package:todolist/src/presentation/home/stores/home_store.dart';
 
 class HomePage extends StatefulWidget {
@@ -66,16 +68,20 @@ class _HomePageState extends ModularState<HomePage, HomeStore> {
             ),
             const SizedBox(height: 55),
             store.obx((tarefas) => _isState(context, tarefas!),
-                onEmpty: _isEmpty(),
-                onError: (error) => const Center(child: Text('erro')),
-                onLoading: const Center(child: Text('load')))
+                onEmpty: _isEmpty(), onError: (error) => const Center(child: Text('erro')), onLoading: _isLoading())
           ],
         ),
       ),
     );
   }
 
-  _isState(BuildContext context, List<Map<String, Object>> listaTarefas) {
+  _isLoading() {
+    return const GFLoader(
+      type: GFLoaderType.circle,
+    );
+  }
+
+  _isState(BuildContext context, List<Tarefas> listaTarefas) {
     final smallScreen = MediaQuery.of(context).size.width;
     return Padding(
       padding: const EdgeInsets.only(bottom: 24.0),
@@ -103,15 +109,15 @@ class _HomePageState extends ModularState<HomePage, HomeStore> {
                 ),
                 itemCount: listaTarefas.length,
                 itemBuilder: (context, index, realIndex) {
-                  final title = listaTarefas[index]['titulo'];
-                  final subtitle = listaTarefas[index]['itens'] as List;
+                  final title = listaTarefas[index].tituloTarefa;
+                  final subtitle = listaTarefas[index].itens.length;
                   return BootstrapCol(
                     sizes: 'col-12',
                     child: Cards(
                       height: 250,
                       title: title.toString(),
-                      subtitle: '${subtitle.length.toString()} tarefas',
-                      percentageProgress: '0.3',
+                      subtitle: subtitle <= 1 ? '${subtitle.toString()} item' : '${subtitle.toString()} itens',
+                      percentageProgress: store.getPorcentagem(index),
                     ),
                   );
                 }),

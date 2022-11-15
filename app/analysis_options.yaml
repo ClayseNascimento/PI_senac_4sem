@@ -88,3 +88,7 @@ linter:
     constant_identifier_names: false
     no_leading_underscores_for_local_identifiers: false
     library_private_types_in_public_api: false
+    prefer_const_constructors_in_immutables: false
+    depend_on_referenced_packages: false
+    overridden_fields: false
+    annotate_overrides: false

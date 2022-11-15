@@ -1,10 +1,12 @@
 import express from 'express';
-import { Pool } from 'pg';
+import { Pool, PoolClient } from 'pg';
+import cors from 'cors';
 
 import { Router, Request, Response } from 'express';
 const app = express();
 const route = Router()
 app.use(express.json())
+app.use(cors())
 
 const pool = new Pool({
   user: "postgres",
@@ -19,11 +21,11 @@ route.get('/', (req: Request, res: Response) => {
 })
 
 route.post('/criarTarefa', async (req: Request, res: Response) => {
-  const client = await pool.connect()
-  const titulo = req.body.tituloTarefa;
-  const usuario = req.body.idUsuario;
+  const client: PoolClient = await pool.connect()
+  const titulo: string = req.body.tituloTarefa;
+  const usuario: number = req.body.idUsuario;
   const lista: Array<any> = req.body.itens;
-  let values = 'values';
+  let values: string = 'values';
 
   try {
     let sql_command = `begin transaction;
@@ -40,12 +42,11 @@ route.post('/criarTarefa', async (req: Request, res: Response) => {
     await client.query(sql_command)
       .then(
         async resultado => {
-          const idTarefa = resultado[2].rows[0].id_tarefa;
+          const idTarefa: number = resultado[2].rows[0].id_tarefa;
 
           for (let i = 0; i < lista.length; i++) {
             let separator = i + 1 == lista.length ? '' : ',';
-            console.log(lista[i].desc);
-            values = values + `('${ lista[i].desc }', ${ lista[i].concluido }, ${ idTarefa } )${ separator }`
+            values = values + `('${ lista[i].descricao }', ${ lista[i].concluido }, ${ idTarefa } )${ separator }`
           }
 
           sql_command = `insert into tarefas_itens (desc_item, concluido, id_tarefa)
@@ -77,8 +78,8 @@ route.post('/criarTarefa', async (req: Request, res: Response) => {
 })
 
 route.post('/alterarTarefa', async (req: Request, res: Response) => {
-  const client = await pool.connect()
-  const idTarefa = req.body.idTarefa;
+  const client: PoolClient = await pool.connect()
+  const idTarefa: number = req.body.idTarefa;
   const listaItens: Array<any> = req.body.itens;
 
   try {
@@ -114,8 +115,8 @@ route.post('/alterarTarefa', async (req: Request, res: Response) => {
 })
 
 route.delete('/itemTarefa/:idItemTarefa', async (req: Request, res: Response) => {
-  const client = await pool.connect()
-  const idItem = +req.params.idItemTarefa
+  const client: PoolClient = await pool.connect()
+  const idItem: number = +req.params.idItemTarefa
 
   try {
     let sql_command = `begin transaction;
@@ -142,18 +143,19 @@ route.delete('/itemTarefa/:idItemTarefa', async (req: Request, res: Response) =>
 })
 
 route.get('/tarefas/:idUser', async (req: Request, res: Response) => {
-  const client = await pool.connect()
-  const idUser = req.params.idUser
-  let listTarefas = [];
+  const client: PoolClient = await pool.connect()
+  const idUser: number = +req.params.idUser
+  let listTarefas: Array<any> = [];
 
   try {
     let sql_command = `select t.titulo_tarefa, ti.*
                        from tarefas t
                        join tarefas_itens ti 	on t.id_tarefa = ti.id_tarefa
                        join usuarios u  		on u.id_usuario  = t.id_usuario
-                       where u.id_usuario = ${ idUser };`
+                       where u.id_usuario = ${ idUser }
+                       order by t.id_tarefa desc;`
 
-   await client.query(sql_command)
+    await client.query(sql_command)
       .then(result => {
         listTarefas = result.rows;
       })
@@ -162,7 +164,39 @@ route.get('/tarefas/:idUser', async (req: Request, res: Response) => {
       })
 
     if (listTarefas) {
-      return res.send(listTarefas)
+      const result = listTarefas.reduce((accumulator, current) => {
+        let lista = [...accumulator]
+
+        const indexFound = lista.findIndex((element: { idTarefa: any; }) => element.idTarefa == current.id_tarefa);
+
+        if (indexFound >= 0) {
+          lista[indexFound].itens.push({
+            "idItem": current.id_item,
+            "desc": current.desc_item,
+            "concluido": current.concluido
+          })
+
+          return lista
+        }
+
+        lista.push({
+          'idTarefa': current.id_tarefa,
+          'tituloTarefa': current.titulo_tarefa,
+          'itens': [
+            {
+              "idItem": current.id_item,
+              "desc": current.desc_item,
+              "concluido": current.concluido
+            },
+          ]
+        })
+
+        return lista
+
+      }, new Map())
+
+      res.setHeader("content-type", 'application/json')
+      return res.send(result)
     }
 
     return res.status(404).send([{ "erro": "Registros não encontrados" }])

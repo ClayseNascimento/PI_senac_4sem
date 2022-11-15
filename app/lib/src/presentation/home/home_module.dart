@@ -1,4 +1,5 @@
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:todolist/src/domain/usecases/get_tarefas_usecase.dart';
 import 'package:todolist/src/presentation/home/pages/home_page.dart';
 import 'package:todolist/src/presentation/home/stores/home_store.dart';
 
@@ -8,7 +9,9 @@ class HomeModule extends Module {
   @override
   List<Bind<Object>> get binds => [
         // stores
-        Bind.lazySingleton((i) => HomeStore()),
+        Bind.lazySingleton((i) => HomeStore(
+           i<GetTarefaUsecase>(),
+        )),
       ];
 
   @override

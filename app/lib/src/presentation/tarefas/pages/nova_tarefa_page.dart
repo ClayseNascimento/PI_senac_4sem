@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bootstrap/flutter_bootstrap.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:getwidget/components/loader/gf_loader.dart';
+import 'package:getwidget/types/gf_loader_type.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:todolist/src/@shared/bars/navbar.dart';
@@ -43,9 +45,15 @@ class _NovaTarefaPageState extends ModularState<NovaTarefaPage, NovaTarefaStore>
           store.obx((tarefas) => Expanded(child: _buildBody()),
               onEmpty: const Center(child: Text('vazio')),
               onError: (error) => const Center(child: Text('erro')),
-              onLoading: const Center(child: Text('load')))
+              onLoading: _isLoading())
         ],
       ),
+    );
+  }
+
+  _isLoading() {
+    return const GFLoader(
+      type: GFLoaderType.circle,
     );
   }
 
@@ -98,7 +106,8 @@ class _NovaTarefaPageState extends ModularState<NovaTarefaPage, NovaTarefaStore>
                   sizes: 'col-md-3 col-6',
                   child: ButtonAdd(
                     size: 50,
-                    onTap: store.nameTask == 'Criar tarefa' ? () => store.saveTitleTask() : () => store.saveItensTask(),
+                    onTap:
+                        store.nameTask == 'Criar tarefa' ? () => store.saveTitleTask() : () => store.addItensTaskList(),
                   )),
               const SizedBox(height: 16),
               // ---------- itens adicionados na tarefa ----------
@@ -112,66 +121,73 @@ class _NovaTarefaPageState extends ModularState<NovaTarefaPage, NovaTarefaStore>
                         Container(
                           constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.3),
                           child: SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                Column(
-                                  children: (store.listItens)
-                                      .map((e) => Padding(
-                                            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                                            child: Row(
-                                              children: [
-                                                CheckboxTile(label: e),
-                                                const Spacer(),
-                                                Visibility(
-                                                  visible: store.showOptionsItens &&
-                                                      store.indexItem == store.listItens.indexOf(e),
-                                                  child: InkWell(
-                                                    onTap: () {
-                                                      store.indexItem = store.listItens.indexOf(e);
-                                                      store.editItemTask(context, e);
-                                                    },
-                                                    child: const Icon(
-                                                      FontAwesomeIcons.pencil,
-                                                      color: TodoColors.azul,
-                                                      size: 16,
-                                                    ),
+                              child: Column(
+                            children: [
+                              Column(
+                                children: (store.listItens)
+                                    .map((e) => Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                                          child: Row(
+                                            children: [
+                                              CheckboxTile(
+                                                label: e.descricao,
+                                                onChanged: ((value) {
+                                                  store.isChecked.value = !store.isChecked.value;
+                                                  store.listItens[store.listItens.indexOf(e)].concluido = value;
+                                                  store.setLoading();
+                                                  store.setState('');
+                                                }),
+                                              ),
+                                              const Spacer(),
+                                              Visibility(
+                                                visible: store.showOptionsItens &&
+                                                    store.indexItem == store.listItens.indexOf(e),
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    store.indexItem = store.listItens.indexOf(e);
+                                                    store.editItemTask(context, e);
+                                                  },
+                                                  child: const Icon(
+                                                    FontAwesomeIcons.pencil,
+                                                    color: TodoColors.azul,
+                                                    size: 16,
                                                   ),
                                                 ),
-                                                const SizedBox(width: 8),
-                                                Visibility(
-                                                  visible: store.showOptionsItens &&
-                                                      store.indexItem == store.listItens.indexOf(e),
-                                                  child: InkWell(
-                                                    onTap: () => store.deleteItemTask(context, e),
-                                                    child: const Icon(
-                                                      FontAwesomeIcons.trash,
-                                                      color: TodoColors.vermelho,
-                                                      size: 16,
-                                                    ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Visibility(
+                                                visible: store.showOptionsItens &&
+                                                    store.indexItem == store.listItens.indexOf(e),
+                                                child: InkWell(
+                                                  onTap: () => store.deleteItemTask(context, e),
+                                                  child: const Icon(
+                                                    FontAwesomeIcons.trash,
+                                                    color: TodoColors.vermelho,
+                                                    size: 16,
                                                   ),
                                                 ),
-                                                Visibility(
-                                                  visible: store.showEllipsis &&
-                                                      store.indexItem != store.listItens.indexOf(e),
-                                                  child: InkWell(
-                                                    onTap: (() {
-                                                      store.showEditOrDelete(e);
-                                                    }),
-                                                    child: const Icon(
-                                                      FontAwesomeIcons.ellipsisVertical,
-                                                      color: TodoColors.preto,
-                                                      size: 16,
-                                                    ),
+                                              ),
+                                              Visibility(
+                                                visible:
+                                                    store.showEllipsis && store.indexItem != store.listItens.indexOf(e),
+                                                child: InkWell(
+                                                  onTap: (() {
+                                                    store.showEditOrDelete(e);
+                                                  }),
+                                                  child: const Icon(
+                                                    FontAwesomeIcons.ellipsisVertical,
+                                                    color: TodoColors.preto,
+                                                    size: 16,
                                                   ),
                                                 ),
-                                              ],
-                                            ),
-                                          ))
-                                      .toList(),
-                                ),
-                              ],
-                            ),
-                          ),
+                                              ),
+                                            ],
+                                          ),
+                                        ))
+                                    .toList(),
+                              ),
+                            ],
+                          )),
                         ),
                         // ---------- Input de itens da tarefa ----------
                         Padding(
@@ -183,7 +199,7 @@ class _NovaTarefaPageState extends ModularState<NovaTarefaPage, NovaTarefaStore>
                                 onTap: (() => store.setStateInitial()),
                                 formControl: store.itemTaskControl,
                                 hintText: 'Adicionar novo item',
-                                onSubmitted: () => store.saveItensTask(),
+                                onSubmitted: () => store.addItensTaskList(),
                                 validationMessages: const {
                                   'required': 'Favor informar um item para essa tarefa',
                                 },
@@ -201,9 +217,9 @@ class _NovaTarefaPageState extends ModularState<NovaTarefaPage, NovaTarefaStore>
           // ---------- botão para salvar o card completo ----------
           BootstrapCol(
               sizes: 'col-md-3 col-6',
-              child: const Button(
+              child: Button(
                 text: 'Salvar',
-                // onPressed: () => store.saveCardsTarefas(),
+                onPressed: () => store.saveCardsTarefas(),
               ).primario),
         ],
       ),

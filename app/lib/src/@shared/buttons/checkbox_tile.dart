@@ -5,9 +5,12 @@ import 'package:todolist/src/@shared/constants/todo_colors.dart';
 
 class CheckboxTile extends StatefulWidget {
   final String label;
+  final Function(bool)? onChanged;
 
   const CheckboxTile({
-    Key? key, required this.label,
+    Key? key,
+    required this.label,
+    this.onChanged,
   }) : super(key: key);
 
   @override
@@ -15,10 +18,16 @@ class CheckboxTile extends StatefulWidget {
 }
 
 class _CheckboxTileState extends State<CheckboxTile> {
+  late bool _value;
+
+  @override
+  void initState() {
+    _value = false;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    bool isChecked = false;
-
     return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
       return Material(
         color: TodoColors.transparent,
@@ -29,12 +38,18 @@ class _CheckboxTileState extends State<CheckboxTile> {
               size: 20,
               type: GFCheckboxType.circle,
               onChanged: (value) {
-                setState(() {
-                  isChecked = value;
-                });
+                _value = value;
+                if (widget.onChanged != null) widget.onChanged!(_value);
+                setState(() {});
               },
+
+              //  (value) {
+              //   setState(() {
+              //     isChecked = value;
+              //   });
+              // },
               activeIcon: const Icon(Icons.check, size: 16, color: GFColors.WHITE),
-              value: isChecked,
+              value: _value,
               inactiveIcon: null,
             ),
             const SizedBox(width: 8),
