@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bootstrap/flutter_bootstrap.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:getwidget/components/loader/gf_loader.dart';
-import 'package:getwidget/types/gf_loader_type.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:todolist/src/@shared/bars/navbar.dart';
@@ -13,18 +12,23 @@ import 'package:todolist/src/@shared/constants/todo_colors.dart';
 import 'package:todolist/src/@shared/inputs/text_input.dart';
 import 'package:todolist/src/@shared/state/modular_state.dart';
 import 'package:todolist/src/@shared/state/state_mixin.dart';
-import 'package:todolist/src/presentation/tarefas/stores/nova_tarefa_store.dart';
+import 'package:todolist/src/domain/entities/tarefas.dart';
+import 'package:todolist/src/presentation/tarefas/stores/editar_tarefa_store.dart';
 
-class NovaTarefaPage extends StatefulWidget {
-  const NovaTarefaPage({super.key});
+class EditarTarefaPage extends StatefulWidget {
+  static const editarTarefaArgs = 'editarTarefaArgs';
+  final Tarefas tarefa;
+
+  EditarTarefaPage({super.key, required this.tarefa});
 
   @override
-  State<NovaTarefaPage> createState() => _NovaTarefaPageState();
+  State<EditarTarefaPage> createState() => _EditarTarefaPageState();
 }
 
-class _NovaTarefaPageState extends TDModularState<NovaTarefaPage, NovaTarefaStore> {
+class _EditarTarefaPageState extends TDModularState<EditarTarefaPage, EditarTarefaStore> {
   @override
-  void initState() {
+  void initState()  {
+    store.getItensTarefa(widget.tarefa.itens);
     store.setStateInitial();
     super.initState();
   }
@@ -69,8 +73,9 @@ class _NovaTarefaPageState extends TDModularState<NovaTarefaPage, NovaTarefaStor
             children: [
               // ---------- Titulo da tarefa -------
               Text(
-                store.nameTask,
+                widget.tarefa.tituloTarefa,
                 textAlign: TextAlign.center,
+                maxLines: 2,
                 style: GoogleFonts.roboto(
                   fontSize: 40,
                   fontWeight: FontWeight.w500,
@@ -79,43 +84,21 @@ class _NovaTarefaPageState extends TDModularState<NovaTarefaPage, NovaTarefaStor
                 ),
               ),
               const SizedBox(height: 24),
-              // ---------- Input nome da tarefa ----------
-              BootstrapCol(
-                sizes: ' col-md-4 col-12',
-                child: Material(
-                  color: TodoColors.transparent,
-                  child: Visibility(
-                    visible: store.nameTask == 'Criar tarefa',
-                    child: ReactiveForm(
-                      formGroup: store.form,
-                      child: TextInput(
-                        formControl: store.nameTaskControl,
-                        hintText: 'Nova tarefa',
-                        onSubmitted: () => store.saveTitleTask(),
-                        validationMessages: const {
-                          'required': 'Favor informar o título da tarefa',
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
               // ---------- Botão para adicionar tarefa ou itens na tarefa ----------
               BootstrapCol(
                   sizes: 'col-md-3 col-6',
                   child: ButtonAdd(
                     size: 50,
-                    onTap:
-                        store.nameTask == 'Criar tarefa' ? () => store.saveTitleTask() : () => store.addItensTaskList(),
+                    onTap: () => store.addItensListItens(),
                   )),
               const SizedBox(height: 16),
               // ---------- itens adicionados na tarefa ----------
               BootstrapCol(
-                sizes: ' col-md-4 col-12',
+                sizes: ' col-md-6 col-12',
                 child: Material(
+                  color: TodoColors.transparent,
                   child: Visibility(
-                    visible: store.nameTask != 'Criar tarefa',
+                    visible: store.listItens.isNotEmpty,
                     child: Column(
                       children: [
                         Container(
@@ -129,20 +112,21 @@ class _NovaTarefaPageState extends TDModularState<NovaTarefaPage, NovaTarefaStor
                                           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                                           child: Row(
                                             children: [
-                                              CheckboxTile(
-                                                label: e.descricao,
-                                                value: store.isChecked.value,
-                                                onChanged: ((value) {
-                                                  store.isChecked.value = !store.isChecked.value;
-                                                  store.listItens[store.listItens.indexOf(e)].concluido = value;
-                                                  store.setLoading();
-                                                  store.setState('');
-                                                }),
+                                              Expanded(
+                                                child: CheckboxTile(
+                                                  label: e.descricao,
+                                                  value: e.idItem != null
+                                                      ? e.concluido
+                                                      : store.listItens[store.listItens.indexOf(e)].concluido,
+                                                  onChanged: ((value) {
+                                                    store.onChangeConcluido(value, e);
+                                                  }),
+                                                ),
                                               ),
-                                              const Spacer(),
                                               Visibility(
                                                 visible: store.showOptionsItens &&
-                                                    store.indexItem == store.listItens.indexOf(e),
+                                                    (store.indexItem == e.idItem ||
+                                                        store.indexItem == store.listItens.indexOf(e)),
                                                 child: InkWell(
                                                   onTap: () {
                                                     store.indexItem = store.listItens.indexOf(e);
@@ -158,9 +142,11 @@ class _NovaTarefaPageState extends TDModularState<NovaTarefaPage, NovaTarefaStor
                                               const SizedBox(width: 8),
                                               Visibility(
                                                 visible: store.showOptionsItens &&
-                                                    store.indexItem == store.listItens.indexOf(e),
+                                                    (store.indexItem == e.idItem ||
+                                                        store.indexItem == store.listItens.indexOf(e)),
                                                 child: InkWell(
-                                                  onTap: () => store.deleteItemTask(context, e),
+                                                  // onTap: () => store.deleteItemTask(context, e),
+                                                  onTap: () {},
                                                   child: const Icon(
                                                     FontAwesomeIcons.trash,
                                                     color: TodoColors.vermelho,
@@ -169,8 +155,10 @@ class _NovaTarefaPageState extends TDModularState<NovaTarefaPage, NovaTarefaStor
                                                 ),
                                               ),
                                               Visibility(
-                                                visible:
-                                                    store.showEllipsis && store.indexItem != store.listItens.indexOf(e),
+                                                visible: store.showEllipsis &&
+                                                    (e.idItem != null
+                                                        ? store.indexItem != e.idItem
+                                                        : store.indexItem != store.listItens.indexOf(e)),
                                                 child: InkWell(
                                                   onTap: (() {
                                                     store.showEditOrDelete(e);
@@ -200,7 +188,7 @@ class _NovaTarefaPageState extends TDModularState<NovaTarefaPage, NovaTarefaStor
                                 onTap: (() => store.setStateInitial()),
                                 formControl: store.itemTaskControl,
                                 hintText: 'Adicionar novo item',
-                                onSubmitted: () => store.addItensTaskList(),
+                                onSubmitted: () => store.addItensListItens(),
                                 validationMessages: const {
                                   'required': 'Favor informar um item para essa tarefa',
                                 },
@@ -215,12 +203,12 @@ class _NovaTarefaPageState extends TDModularState<NovaTarefaPage, NovaTarefaStor
               ),
             ],
           ),
-          // ---------- botão para salvar o card completo ----------
+          // ---------- botão para salvar alteração do card ----------
           BootstrapCol(
               sizes: 'col-md-3 col-6',
               child: Button(
                 text: 'Salvar',
-                onPressed: () => store.saveCardsTarefas(),
+                onPressed: () => store.saveCardsTarefas(widget.tarefa.idTarefa),
               ).primario),
         ],
       ),

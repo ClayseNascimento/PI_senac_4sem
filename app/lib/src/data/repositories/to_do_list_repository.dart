@@ -1,8 +1,9 @@
 import 'package:todolist/src/@shared/errors/error_constants.dart';
 import 'package:todolist/src/@shared/errors/exceptions/exceptions.dart';
 import 'package:todolist/src/data/datasources/to_do_list_datasource.dart';
+import 'package:todolist/src/data/models/alterar_tarefa_input_model.dart';
 import 'package:todolist/src/data/models/criar_tarefa_input_model.dart';
-import 'package:todolist/src/data/models/tarefas_model.dart';
+import 'package:todolist/src/domain/entities/alterar_tarefa_input.dart';
 import 'package:todolist/src/domain/entities/criar_tarefa_input.dart';
 import 'package:todolist/src/@shared/errors/failures/failures.dart';
 import 'package:dartz/dartz.dart';
@@ -27,9 +28,24 @@ class ToDoListRepository implements IToDoListRepository {
   }
 
   @override
-  Future<Either<Failure, List<TarefasModel>>> getTarefa(int idUsuario) async {
+  Future<Either<Failure, List<Tarefas>>> getTarefa(int idUsuario) async {
     try {
       final response = await _datasource.getTarefas(idUsuario);
+      final List<Tarefas> lista = response.map((e) => e.toDomain()).toList();
+
+      return Right(lista);
+
+    } on RemoteException catch (exception) {
+      return Left(SaveFailure(message: exception.message));
+    } catch (error) {
+      return Left(SaveFailure(message: msgErrConnection));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> alterarTarefa(AlterarTarefaInput input) async {
+    try {
+      final response = await _datasource.alterarTarefa(AlterarTarefaInputModel.fromDomain(input));
       return Right(response);
     } on RemoteException catch (exception) {
       return Left(SaveFailure(message: exception.message));

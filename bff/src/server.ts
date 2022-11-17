@@ -81,25 +81,55 @@ route.post('/alterarTarefa', async (req: Request, res: Response) => {
   const client: PoolClient = await pool.connect()
   const idTarefa: number = req.body.idTarefa;
   const listaItens: Array<any> = req.body.itens;
+  let values: string = 'values';
+  let listaItensInsert: Array<any> = [];
 
   try {
     let sql_command = `begin transaction;`
 
     for (let i = 0; i < listaItens.length; i++) {
-      sql_command = `${ sql_command }
-                        update tarefas_itens
-                        set desc_item = '${ listaItens[i].desc }',
-                            concluido = ${ listaItens[i].concluido }
-                        where id_item = ${ listaItens[i].idItem }
-                              and id_tarefa = ${ idTarefa };`
+      if (listaItens[i].idItem > 0) {
+        sql_command = `${ sql_command }
+	                        update tarefas_itens
+	                        set desc_item = '${ listaItens[i].descricao }',
+	                            concluido = ${ listaItens[i].concluido }
+	                        where id_item = ${ listaItens[i].idItem }
+	                              and id_tarefa = ${ idTarefa };`
 
+      } else {
+        listaItensInsert.push(listaItens[i])
+      }
     }
+
+    console.log(sql_command);
+
 
     await client.query(sql_command)
       .catch(async e => {
         await client.query(`rollback;`)
+        console.log('Erro ao alterar itens da tarefa.');
         throw new Error(e.message = 'Erro ao alterar itens da tarefa.');
       })
+
+    if (listaItensInsert.length > 0) {
+      for (let i = 0; i < listaItensInsert.length; i++) {
+        let separator = i + 1 == listaItensInsert.length ? '' : ',';
+        values = values + `('${ listaItensInsert[i].descricao }', ${ listaItensInsert[i].concluido }, ${ idTarefa } )${ separator }`
+      }
+
+      let sql_Insert_command;
+      sql_Insert_command = `insert into tarefas_itens (desc_item, concluido, id_tarefa)
+                            ${ values }`
+
+      console.log(sql_Insert_command);
+
+      await client.query(sql_Insert_command)
+        .catch(async e => {
+          await client.query(`rollback;`)
+          console.log('Erro ao adicionar itens da tarefa.');
+          throw new Error(e.message = 'Erro ao alterar itens da tarefa.');
+        })
+    }
 
     await client.query(`commit;`)
     return res.status(201).send({ "sucesso": true });

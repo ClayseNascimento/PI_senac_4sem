@@ -6,11 +6,13 @@ import 'package:todolist/src/@shared/constants/todo_colors.dart';
 class CheckboxTile extends StatefulWidget {
   final String label;
   final Function(bool)? onChanged;
+  final bool value;
 
   const CheckboxTile({
     Key? key,
     required this.label,
     this.onChanged,
+    required this.value,
   }) : super(key: key);
 
   @override
@@ -22,7 +24,7 @@ class _CheckboxTileState extends State<CheckboxTile> {
 
   @override
   void initState() {
-    _value = false;
+    _value = widget.value;
     super.initState();
   }
 
@@ -32,6 +34,7 @@ class _CheckboxTileState extends State<CheckboxTile> {
       return Material(
         color: TodoColors.transparent,
         child: Row(
+          mainAxisSize: MainAxisSize.max,
           children: [
             GFCheckbox(
               activeBgColor: TodoColors.verde,
@@ -42,22 +45,19 @@ class _CheckboxTileState extends State<CheckboxTile> {
                 if (widget.onChanged != null) widget.onChanged!(_value);
                 setState(() {});
               },
-
-              //  (value) {
-              //   setState(() {
-              //     isChecked = value;
-              //   });
-              // },
               activeIcon: const Icon(Icons.check, size: 16, color: GFColors.WHITE),
-              value: _value,
+              value: widget.value,
               inactiveIcon: null,
             ),
             const SizedBox(width: 8),
-            Text(
-              widget.label,
-              style: GoogleFonts.roboto(
-                fontSize: 16,
-                color: TodoColors.preto,
+            Expanded(
+              child: Text(
+                widget.label,
+                maxLines: 2,
+                style: GoogleFonts.roboto(
+                  fontSize: 16,
+                  color: TodoColors.preto,
+                ),
               ),
             ),
           ],

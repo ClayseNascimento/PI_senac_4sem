@@ -23,4 +23,10 @@ class TarefasModel extends Tarefas {
         );
 
   factory TarefasModel.fromJson(Map<String, dynamic> json) => _$TarefasModelFromJson(json);
+
+  Tarefas toDomain() => Tarefas(
+        idTarefa: idTarefa,
+        tituloTarefa: tituloTarefa,
+        itens: itens.map((e) => e.toDomain()).toList(),
+      );
 }

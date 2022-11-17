@@ -18,7 +18,7 @@ class ItemTarefaModel extends ItemTarefa {
   }) : super(
           descricao: descricao,
           concluido: concluido,
-          idItem: idItem
+          idItem: idItem,
         );
 
   factory ItemTarefaModel.fromJson(Map<String, dynamic> json) => _$ItemTarefaModelFromJson(json);
@@ -29,5 +29,11 @@ class ItemTarefaModel extends ItemTarefa {
         descricao: domain.descricao,
         concluido: domain.concluido,
         idItem: domain.idItem,
+      );
+
+  ItemTarefa toDomain() => ItemTarefa(
+        descricao: descricao,
+        concluido: concluido,
+        idItem: idItem,
       );
 }

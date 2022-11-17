@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 // ignore: must_be_immutable
 class ItemTarefa extends Equatable {
-  final String descricao;
+  String descricao;
   bool concluido;
   final int? idItem;
 
@@ -13,5 +13,5 @@ class ItemTarefa extends Equatable {
   });
 
   @override
-  List<Object> get props => [descricao, concluido];
+  List<Object> get props => [descricao, concluido] ;
 }

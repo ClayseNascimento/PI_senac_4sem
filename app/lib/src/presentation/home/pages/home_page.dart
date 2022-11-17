@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:getwidget/components/loader/gf_loader.dart';
 import 'package:getwidget/types/gf_loader_type.dart';
@@ -14,6 +15,8 @@ import 'package:todolist/src/@shared/state/modular_state.dart';
 import 'package:todolist/src/@shared/state/state_mixin.dart';
 import 'package:todolist/src/domain/entities/tarefas.dart';
 import 'package:todolist/src/presentation/home/stores/home_store.dart';
+import 'package:todolist/src/presentation/tarefas/pages/editar_tarefa_page.dart';
+import 'package:todolist/src/presentation/tarefas/tarefas_module.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -24,7 +27,7 @@ class HomePage extends StatefulWidget {
 
 final controller = CarouselController();
 
-class _HomePageState extends ModularState<HomePage, HomeStore> {
+class _HomePageState extends TDModularState<HomePage, HomeStore> {
   int activeIndex = 0;
   @override
   void initState() {
@@ -67,8 +70,12 @@ class _HomePageState extends ModularState<HomePage, HomeStore> {
               ),
             ),
             const SizedBox(height: 55),
-            store.obx((tarefas) => _isState(context, tarefas!),
-                onEmpty: _isEmpty(), onError: (error) => const Center(child: Text('erro')), onLoading: _isLoading())
+            store.obx(
+              (tarefas) => _isState(context, tarefas!),
+              onEmpty: _isEmpty(),
+              onError: (error) => const Center(child: Text('erro')),
+              onLoading: _isLoading(),
+            )
           ],
         ),
       ),
@@ -111,13 +118,25 @@ class _HomePageState extends ModularState<HomePage, HomeStore> {
                 itemBuilder: (context, index, realIndex) {
                   final title = listaTarefas[index].tituloTarefa;
                   final subtitle = listaTarefas[index].itens.length;
-                  return BootstrapCol(
-                    sizes: 'col-12',
-                    child: Cards(
-                      height: 250,
-                      title: title.toString(),
-                      subtitle: subtitle <= 1 ? '${subtitle.toString()} item' : '${subtitle.toString()} itens',
-                      percentageProgress: store.getPorcentagem(index),
+                  return Material(
+                    color: TodoColors.transparent,
+                    child: InkWell(
+                      hoverColor: TodoColors.transparent,
+                      onTap: () {
+                        Modular.to.navigate(
+                          '${TarefasModule.novaTarefa}${TarefasModule.editarTarefa}',
+                          arguments: {EditarTarefaPage.editarTarefaArgs: listaTarefas[index]},
+                        );
+                      },
+                      child: BootstrapCol(
+                        sizes: 'col-12',
+                        child: Cards(
+                          height: 250,
+                          title: title.toString(),
+                          subtitle: subtitle <= 1 ? '${subtitle.toString()} item' : '${subtitle.toString()} itens',
+                          percentageProgress: store.getPorcentagem(index),
+                        ),
+                      ),
                     ),
                   );
                 }),
