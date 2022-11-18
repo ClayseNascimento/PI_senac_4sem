@@ -9,6 +9,7 @@ abstract class IToDoListDatasource {
   Future<bool> criarTarefa(CriarTarefaInputModel input);
   Future<List<TarefasModel>> getTarefas(int idUsuario);
   Future<bool> alterarTarefa(AlterarTarefaInputModel input);
+  Future<bool> excluirItemTarefa(int idItem);
 }
 
 class ToDoListDatasource implements IToDoListDatasource {
@@ -60,6 +61,22 @@ class ToDoListDatasource implements IToDoListDatasource {
      try {
       final response = await _httpClient.post('/alterarTarefa', data: input.toJson());
       if (response.statusCode == 201 && response.data != null && response.data['sucesso']) {
+        return true;
+      } else {
+        throw RemoteException(message: response.data);
+      }
+    } on RemoteException catch (exception) {
+      throw RemoteException(message: exception.message);
+    } catch (error) {
+      throw RemoteException(message: msgErrConnection);
+    }
+  }
+
+  @override
+  Future<bool> excluirItemTarefa(int idItem) async{
+       try {
+      final response = await _httpClient.delete('/itemTarefa/$idItem');
+      if (response.statusCode == 200 && response.data != null && response.data['sucesso']) {
         return true;
       } else {
         throw RemoteException(message: response.data);

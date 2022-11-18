@@ -7,10 +7,10 @@ import 'package:todolist/src/@shared/state/stores.dart';
 import 'package:todolist/src/domain/entities/criar_tarefa_input.dart';
 import 'package:todolist/src/domain/entities/item_tarefa.dart';
 import 'package:todolist/src/domain/usecases/criar_tarefa_usecase.dart';
-import 'package:todolist/src/presentation/home/home_module.dart';
 import 'package:rx_notifier/rx_notifier.dart';
+import 'package:todolist/src/presentation/home/home_module.dart';
 
-class NovaTarefaStore extends TDStore<String> {
+class NovaTarefaStore extends TDStore<CriarTarefaInput> {
   final CriarTarefaUsecase _criarTarefaUsecase;
 
   NovaTarefaStore(this._criarTarefaUsecase);
@@ -25,17 +25,22 @@ class NovaTarefaStore extends TDStore<String> {
     ]),
   });
 
-  FormControl<String> get nameTaskControl => form.control(NovaTarefaFormFields.task) as FormControl<String>;
-  FormControl<String> get itemTaskControl => form.control(NovaTarefaFormFields.itemTask) as FormControl<String>;
+  FormControl<String> get tituloTarefaControl => form.control(NovaTarefaFormFields.task) as FormControl<String>;
+  FormControl<String> get itemTarefaControl => form.control(NovaTarefaFormFields.itemTask) as FormControl<String>;
 
   // ------------ Estado da página ---------------------
 
-  String nameTask = 'Criar tarefa';
+  String tituloTarefa = 'Criar tarefa';
+  CriarTarefaInput tarefa = CriarTarefaInput(
+    tituloTarefa: 'Criar Tarefa',
+    idUsuario: 2,
+    itens: const [],
+  );
+
   List<ItemTarefa> listItens = [];
   bool showOptionsItens = false;
   bool showEllipsis = true;
   int indexItem = -1;
-  List<ItemTarefa> listTarefas = [];
 
   RxNotifier isChecked = RxNotifier<bool>(false);
 
@@ -43,55 +48,59 @@ class NovaTarefaStore extends TDStore<String> {
     setLoading();
     indexItem = -1;
     showOptionsItens = false;
-    setState(nameTask);
+    setState(tarefa);
   }
 
-  setStateAfterSave() {
-    setLoading();
-    nameTaskControl.reset();
-    itemTaskControl.reset();
-    nameTask = 'Criar tarefa';
-    listItens = [];
-    showOptionsItens = false;
-    showEllipsis = true;
-    indexItem = -1;
-    listTarefas = [];
-    setState('');
-  }
-
-  saveTitleTask() {
-    setLoading();
+// -------- Função para adicionar título da tarefa --------
+  addTituloTarefa() {
     bool isValid = true;
 
-    if (!nameTaskControl.valid) {
+    if (!tituloTarefaControl.valid) {
       isValid = false;
-      nameTaskControl.markAsTouched();
+      tituloTarefaControl.markAsTouched();
     }
 
     if (isValid) {
-      nameTask = nameTaskControl.value!;
+      tituloTarefa = tituloTarefaControl.value!;
     }
-    setState(nameTask);
+
+    tarefa = CriarTarefaInput(
+      tituloTarefa: tituloTarefa,
+      idUsuario: 2,
+      itens: const [],
+    );
+
+    setState(tarefa);
   }
 
+// -------- Função para adicionar itens localmente na tarefa --------
   addItensTaskList() {
-    setLoading();
     bool isValid = true;
 
-    if (!itemTaskControl.valid) {
+    if (!itemTarefaControl.valid) {
       isValid = false;
-      itemTaskControl.markAsTouched();
+      itemTarefaControl.markAsTouched();
     }
 
     if (isValid) {
-      setLoading();
-      listItens.add(ItemTarefa(descricao: itemTaskControl.value!, concluido: isChecked.value));
-      itemTaskControl.reset();
-      setState(itemTaskControl.value ?? '');
+      listItens.add(ItemTarefa(
+        descricao: itemTarefaControl.value!,
+        concluido: isChecked.value,
+      ));
+      itemTarefaControl.reset();
     }
+
+    tarefa.itens = listItens;
 
     setStateInitial();
-    setState(itemTaskControl.value ?? '');
+  }
+
+  // ------ Função para alterar estado do atributo concluído do item ------
+  onChangeConcluido(bool isChecked, ItemTarefa element) {
+    setLoading();
+    final indexItem = listItens.indexOf(element);
+    listItens[indexItem].concluido = isChecked;
+    setStateInitial();
   }
 
   // ------ Exibir opções de editar e excluir -----
@@ -99,16 +108,16 @@ class NovaTarefaStore extends TDStore<String> {
     setLoading();
     indexItem = listItens.indexOf(element);
     showOptionsItens = true;
-    setState(itemTaskControl.value ?? '');
+    itemTarefaControl.reset();
+    setState(tarefa);
   }
 
   // ------ Função para editar item da tarefa ------
   editItemTask(BuildContext context, ItemTarefa element) {
-    setLoading();
-    itemTaskControl.value = element.descricao;
+    itemTarefaControl.value = element.descricao;
     indexItem = listItens.indexOf(element);
-    ToDoDialog(
-      context: context,
+    ToDoDialog.doubleButton(
+      context,
       title: 'Editar',
       content: 'Informe o novo texto para essa tarefa',
       buttonLeftText: 'Confirmar',
@@ -116,12 +125,12 @@ class NovaTarefaStore extends TDStore<String> {
       buttonLeftOnTap: () {
         setLoading();
         indexItem = listItens.indexOf(element);
-        listItens[indexItem].descricao = itemTaskControl.value!;
+        listItens[indexItem].descricao = itemTarefaControl.value!;
         showOptionsItens = false;
         showEllipsis = true;
-        itemTaskControl.reset();
+        itemTarefaControl.reset();
         indexItem = -1;
-        setState(itemTaskControl.value ?? '');
+        setState(tarefa);
         Modular.to.pop();
       },
       buttonRigthOnTap: () {
@@ -129,8 +138,8 @@ class NovaTarefaStore extends TDStore<String> {
         indexItem = -1;
         showOptionsItens = false;
         showEllipsis = true;
-        itemTaskControl.reset();
-        setState(itemTaskControl.value ?? '');
+        itemTarefaControl.reset();
+        setState(tarefa);
         Modular.to.pop();
       },
       widget: Padding(
@@ -140,16 +149,16 @@ class NovaTarefaStore extends TDStore<String> {
             formGroup: form,
             child: TextInput(
               onTap: (() => setStateInitial()),
-              formControl: itemTaskControl,
-              hintText: 'Adicionar novo item',
+              formControl: itemTarefaControl,
               onSubmitted: () {
                 setLoading();
                 indexItem = listItens.indexOf(element);
-                listItens[indexItem].descricao = itemTaskControl.value!;
+                listItens[indexItem].descricao = itemTarefaControl.value!;
                 showOptionsItens = false;
                 showEllipsis = true;
-                itemTaskControl.reset();
-                setState(itemTaskControl.value ?? '');
+                itemTarefaControl.reset();
+                indexItem = -1;
+                setState(tarefa);
                 Modular.to.pop();
               },
               validationMessages: const {
@@ -160,15 +169,13 @@ class NovaTarefaStore extends TDStore<String> {
         ),
       ),
     ).show();
-    setState(itemTaskControl.value ?? '');
   }
 
   // ------ Função para excluir item da tarefa ------
   deleteItemTask(BuildContext context, ItemTarefa element) {
-    setLoading();
     indexItem = listItens.indexOf(element);
-    ToDoDialog(
-      context: context,
+    ToDoDialog.doubleButton(
+      context,
       title: 'Deletar',
       content: 'Você gostaria de deletar esse item?',
       buttonLeftText: 'Sim',
@@ -180,7 +187,7 @@ class NovaTarefaStore extends TDStore<String> {
         showOptionsItens = false;
         showEllipsis = true;
         indexItem = -1;
-        setState(itemTaskControl.value ?? '');
+        setState(tarefa);
         Modular.to.pop();
       },
       buttonRigthOnTap: () {
@@ -188,28 +195,29 @@ class NovaTarefaStore extends TDStore<String> {
         indexItem = -1;
         showOptionsItens = false;
         showEllipsis = true;
-        setState(itemTaskControl.value ?? '');
+        setState(tarefa);
         Modular.to.pop();
       },
     ).show();
-    setState(itemTaskControl.value ?? '');
   }
 
   // ----- Função para salvar um card de tarefas -----
-  saveCardsTarefas() async {
-    setLoading();
-
-    for (var item in listItens) {
-      listTarefas.add(ItemTarefa(
-        descricao: item.descricao,
-        concluido: item.concluido,
-      ));
+  saveCardsTarefas(BuildContext context) async {
+      if (listItens.isEmpty) {
+      return ToDoDialog.singleButton(
+        context,
+        title: 'Atenção',
+        content: 'Favor inserir um item nessa tarefa antes de salva-la!',
+        buttonCenterOnTap: () => Modular.to.pop(),
+      ).show();
     }
+
+
 
     final CriarTarefaInput input = CriarTarefaInput(
       idUsuario: 02,
-      tituloTarefa: nameTask,
-      itens: listTarefas,
+      tituloTarefa: tituloTarefa,
+      itens: listItens,
     );
 
     final result = await _criarTarefaUsecase.call(input);
@@ -217,7 +225,6 @@ class NovaTarefaStore extends TDStore<String> {
     result.fold((failure) => false, (save) => true);
 
     Modular.to.pushNamed(HomeModule.home);
-    setStateAfterSave();
   }
 }
 

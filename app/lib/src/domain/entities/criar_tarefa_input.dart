@@ -1,10 +1,11 @@
 import 'package:equatable/equatable.dart';
 import 'package:todolist/src/domain/entities/item_tarefa.dart';
 
+// ignore: must_be_immutable
 class CriarTarefaInput extends Equatable {
   final int idUsuario;
   final String tituloTarefa;
-  final List<ItemTarefa> itens;
+  List<ItemTarefa> itens;
 
   CriarTarefaInput({
     required this.idUsuario,

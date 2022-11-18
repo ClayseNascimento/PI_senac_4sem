@@ -7,13 +7,15 @@ import 'package:todolist/src/@shared/state/stores.dart';
 import 'package:todolist/src/domain/entities/alterar_tarefa_input.dart';
 import 'package:todolist/src/domain/entities/item_tarefa.dart';
 import 'package:todolist/src/domain/usecases/alterar_tarefa_usecase.dart';
+import 'package:todolist/src/domain/usecases/excluir_item_tarefa_usecase.dart';
 import 'package:todolist/src/presentation/home/home_module.dart';
 import 'package:rx_notifier/rx_notifier.dart';
 
 class EditarTarefaStore extends TDStore<List<ItemTarefa>> {
   final AlterarTarefaUsecase _alterarTarefaUsecase;
+  final ExcluirItemTarefaUsecase _excluirItemTarefaUsecase;
 
-  EditarTarefaStore(this._alterarTarefaUsecase);
+  EditarTarefaStore(this._alterarTarefaUsecase, this._excluirItemTarefaUsecase);
 
   // -------------- Controller input--------------------
   final FormGroup form = FormGroup({
@@ -26,7 +28,7 @@ class EditarTarefaStore extends TDStore<List<ItemTarefa>> {
 
   // ------------ Estado da página ---------------------
 
-  String nameTask = 'Criar tarefa';
+  // String nameTask = 'Criar tarefa';
   List<ItemTarefa> listItens = [];
   bool showOptionsItens = false;
   bool showEllipsis = true;
@@ -85,8 +87,8 @@ class EditarTarefaStore extends TDStore<List<ItemTarefa>> {
     setLoading();
     itemTaskControl.value = element.descricao;
     indexItem = listItens.indexOf(element);
-    ToDoDialog(
-      context: context,
+    ToDoDialog.doubleButton(
+      context,
       title: 'Editar',
       content: 'Informe o novo texto para esse item',
       buttonLeftText: 'Confirmar',
@@ -148,39 +150,50 @@ class EditarTarefaStore extends TDStore<List<ItemTarefa>> {
 
   // ------ Função para excluir item da tarefa ------
   deleteItemTask(BuildContext context, ItemTarefa element) {
-    setLoading();
     indexItem = listItens.indexOf(element);
-    ToDoDialog(
-      context: context,
+    ToDoDialog.doubleButton(
+      context,
       title: 'Deletar',
       content: 'Você gostaria de deletar esse item?',
       buttonLeftText: 'Sim',
       buttonRigthText: 'Não',
-      buttonLeftOnTap: () {
+      buttonLeftOnTap: () async {
         setLoading();
         indexItem = listItens.indexOf(element);
         listItens.removeAt(indexItem);
-        // showOptionsItens = false;
+        showOptionsItens = false;
         showEllipsis = true;
         indexItem = -1;
-        // setState(itemTaskControl.value ?? '');
+
+        if (element.idItem != null) {
+          final result = await _excluirItemTarefaUsecase.call(element.idItem!);
+          result.fold((failure) => false, (save) => true);
+        }
+
         Modular.to.pop();
+        setState(listItens);
       },
       buttonRigthOnTap: () {
         setLoading();
         indexItem = -1;
-        // showOptionsItens = false;
+        showOptionsItens = false;
         showEllipsis = true;
-        // setState(itemTaskControl.value ?? '');
+        setState(listItens);
         Modular.to.pop();
       },
     ).show();
-    // setState(itemTaskControl.value ?? '');
   }
 
   // ----- Função para salvar alterações do card de tarefas -----
-  saveCardsTarefas(int idTarefa) async {
-    setLoading();
+  saveCardsTarefas(BuildContext context, int idTarefa) async {
+    if (listItens.isEmpty) {
+      return ToDoDialog.singleButton(
+        context,
+        title: 'Atenção',
+        content: 'Favor inserir um item nessa tarefa antes de salva-la!',
+        buttonCenterOnTap: () => Modular.to.pop(),
+      ).show();
+    }
 
     final AlterarTarefaInput input = AlterarTarefaInput(
       idUsuario: 02,

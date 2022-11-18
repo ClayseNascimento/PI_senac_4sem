@@ -11,10 +11,13 @@ class ToDoDialog extends StatelessWidget {
   final Function()? buttonLeftOnTap;
   final Function()? buttonRigthOnTap;
   final Widget? widget;
+  final String? buttonCenterText;
+  final Function()? buttonCenterOnTap;
+  final TodoDialogType? type;
 
-  const ToDoDialog({
+  const ToDoDialog._(
+    this.context, {
     Key? key,
-    required this.context,
     required this.title,
     required this.content,
     this.buttonLeftText,
@@ -22,7 +25,50 @@ class ToDoDialog extends StatelessWidget {
     this.buttonLeftOnTap,
     this.buttonRigthOnTap,
     this.widget,
+    this.buttonCenterText,
+    this.buttonCenterOnTap,
+    this.type = TodoDialogType.doubleButton,
   }) : super(key: key);
+
+  factory ToDoDialog.doubleButton(
+    BuildContext context, {
+    required String title,
+    required String content,
+    String? buttonLeftText,
+    String? buttonRigthText,
+    Function()? buttonLeftOnTap,
+    Function()? buttonRigthOnTap,
+    Widget? widget,
+  }) =>
+      ToDoDialog._(
+        context,
+        title: title,
+        content: content,
+        buttonLeftText: buttonLeftText,
+        buttonRigthText: buttonRigthText,
+        buttonLeftOnTap: buttonLeftOnTap,
+        buttonRigthOnTap: buttonRigthOnTap,
+        widget: widget,
+        type: TodoDialogType.doubleButton,
+      );
+
+  factory ToDoDialog.singleButton(
+    BuildContext context, {
+    required String title,
+    required String content,
+    String? buttonCenterText,
+    Function()? buttonCenterOnTap,
+    Widget? widget,
+  }) =>
+      ToDoDialog._(
+        context,
+        title: title,
+        content: content,
+        widget: widget,
+        buttonCenterText: buttonCenterText,
+        buttonCenterOnTap: buttonCenterOnTap,
+        type: TodoDialogType.singleButton,
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +81,7 @@ class ToDoDialog extends StatelessWidget {
         builder: (BuildContext context) {
           return Dialog(
             shape: RoundedRectangleBorder(
-                side: const BorderSide(color: TodoColors.azul, width: 2),
-                borderRadius: BorderRadius.circular(10.0)), //this right here
+                side: const BorderSide(color: TodoColors.azul, width: 2), borderRadius: BorderRadius.circular(10.0)),
             child: SizedBox(
               width: double.minPositive,
               child: Column(
@@ -86,20 +131,87 @@ class ToDoDialog extends StatelessWidget {
                     child: widget ?? const SizedBox.shrink(),
                   ),
                   const Divider(color: TodoColors.azul, height: 2),
-                  IntrinsicHeight(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Expanded(
+                  type == TodoDialogType.doubleButton
+                      ? IntrinsicHeight(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  width: double.maxFinite,
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                                  child: InkWell(
+                                    hoverColor: TodoColors.transparent,
+                                    onTap: () {
+                                      if (buttonLeftOnTap != null) buttonLeftOnTap!();
+                                    },
+                                    borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(10)),
+                                    overlayColor: MaterialStateProperty.all(TodoColors.azulClaro),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                      child: Text(
+                                        buttonLeftText ?? 'Sim',
+                                        style: GoogleFonts.roboto(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400,
+                                          color: TodoColors.preto,
+                                          decoration: TextDecoration.none,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                        maxLines: 2,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const VerticalDivider(color: TodoColors.azul, width: 2),
+                              Expanded(
+                                child: Container(
+                                  width: double.maxFinite,
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                                  child: InkWell(
+                                    onTap: () {
+                                      if (buttonRigthOnTap != null) buttonRigthOnTap!();
+                                    },
+                                    borderRadius: const BorderRadius.only(
+                                      bottomRight: Radius.circular(10),
+                                    ),
+                                    overlayColor: MaterialStateProperty.all(TodoColors.vermelhoSuave),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                      child: Text(
+                                        buttonRigthText ?? 'Não',
+                                        style: GoogleFonts.roboto(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400,
+                                          color: TodoColors.preto,
+                                          decoration: TextDecoration.none,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                        maxLines: 2,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : Container(
+                          width: double.maxFinite,
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
                           child: InkWell(
+                            borderRadius: const BorderRadius.only(
+                                bottomRight: Radius.circular(10), bottomLeft: Radius.circular(10)),
+                            overlayColor: MaterialStateProperty.all(TodoColors.azulClaro),
                             onTap: () {
-                              if (buttonLeftOnTap != null) buttonLeftOnTap!();
+                              if (buttonCenterOnTap != null) buttonCenterOnTap!();
                             },
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 16.0),
                               child: Text(
-                                buttonLeftText ?? 'Sim',
+                                buttonCenterText ?? 'Entendi',
                                 style: GoogleFonts.roboto(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
@@ -112,34 +224,6 @@ class ToDoDialog extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(
-                          width: 50,
-                          child: VerticalDivider(color: TodoColors.azul, width: 2),
-                        ),
-                        Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              if (buttonRigthOnTap != null) buttonRigthOnTap!();
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 16.0),
-                              child: Text(
-                                buttonRigthText ?? 'Não',
-                                style: GoogleFonts.roboto(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  color: TodoColors.preto,
-                                  decoration: TextDecoration.none,
-                                ),
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
                 ],
               ),
             ),
@@ -147,3 +231,5 @@ class ToDoDialog extends StatelessWidget {
         });
   }
 }
+
+enum TodoDialogType { singleButton, doubleButton }

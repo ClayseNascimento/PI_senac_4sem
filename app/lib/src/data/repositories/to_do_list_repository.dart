@@ -53,4 +53,16 @@ class ToDoListRepository implements IToDoListRepository {
       return Left(SaveFailure(message: msgErrConnection));
     }
   }
+
+  @override
+  Future<Either<Failure, bool>> excluirItemTarefa(int idItem) async {
+    try {
+      final response = await _datasource.excluirItemTarefa(idItem);
+      return Right(response);
+    } on RemoteException catch (exception) {
+      return Left(SaveFailure(message: exception.message));
+    } catch (error) {
+      return Left(SaveFailure(message: msgErrConnection));
+    }
+  }
 }

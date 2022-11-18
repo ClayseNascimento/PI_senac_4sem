@@ -69,7 +69,7 @@ class _NovaTarefaPageState extends TDModularState<NovaTarefaPage, NovaTarefaStor
             children: [
               // ---------- Titulo da tarefa -------
               Text(
-                store.nameTask,
+                store.tituloTarefa,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.roboto(
                   fontSize: 40,
@@ -85,13 +85,13 @@ class _NovaTarefaPageState extends TDModularState<NovaTarefaPage, NovaTarefaStor
                 child: Material(
                   color: TodoColors.transparent,
                   child: Visibility(
-                    visible: store.nameTask == 'Criar tarefa',
+                    visible: store.tituloTarefa == 'Criar tarefa',
                     child: ReactiveForm(
                       formGroup: store.form,
                       child: TextInput(
-                        formControl: store.nameTaskControl,
+                        formControl: store.tituloTarefaControl,
                         hintText: 'Nova tarefa',
-                        onSubmitted: () => store.saveTitleTask(),
+                        onSubmitted: () => store.addTituloTarefa(),
                         validationMessages: const {
                           'required': 'Favor informar o título da tarefa',
                         },
@@ -101,21 +101,23 @@ class _NovaTarefaPageState extends TDModularState<NovaTarefaPage, NovaTarefaStor
                 ),
               ),
               const SizedBox(height: 24),
-              // ---------- Botão para adicionar tarefa ou itens na tarefa ----------
+              // ---------- Botão para adicionar título da tarefa ou itens na tarefa ----------
               BootstrapCol(
                   sizes: 'col-md-3 col-6',
                   child: ButtonAdd(
                     size: 50,
-                    onTap:
-                        store.nameTask == 'Criar tarefa' ? () => store.saveTitleTask() : () => store.addItensTaskList(),
+                    onTap: store.tituloTarefa == 'Criar tarefa'
+                        ? () => store.addTituloTarefa()
+                        : () => store.addItensTaskList(),
                   )),
               const SizedBox(height: 16),
               // ---------- itens adicionados na tarefa ----------
               BootstrapCol(
                 sizes: ' col-md-4 col-12',
                 child: Material(
+                  color: TodoColors.transparent,
                   child: Visibility(
-                    visible: store.nameTask != 'Criar tarefa',
+                    visible: store.tituloTarefa != 'Criar tarefa',
                     child: Column(
                       children: [
                         Container(
@@ -129,17 +131,15 @@ class _NovaTarefaPageState extends TDModularState<NovaTarefaPage, NovaTarefaStor
                                           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                                           child: Row(
                                             children: [
-                                              CheckboxTile(
-                                                label: e.descricao,
-                                                value: store.isChecked.value,
-                                                onChanged: ((value) {
-                                                  store.isChecked.value = !store.isChecked.value;
-                                                  store.listItens[store.listItens.indexOf(e)].concluido = value;
-                                                  store.setLoading();
-                                                  store.setState('');
-                                                }),
+                                              Expanded(
+                                                child: CheckboxTile(
+                                                  label: e.descricao,
+                                                  value: store.listItens[store.listItens.indexOf(e)].concluido,
+                                                  onChanged: ((value) {
+                                                    store.onChangeConcluido(value, e);
+                                                  }),
+                                                ),
                                               ),
-                                              const Spacer(),
                                               Visibility(
                                                 visible: store.showOptionsItens &&
                                                     store.indexItem == store.listItens.indexOf(e),
@@ -194,11 +194,12 @@ class _NovaTarefaPageState extends TDModularState<NovaTarefaPage, NovaTarefaStor
                         Padding(
                           padding: const EdgeInsets.only(top: 16.0),
                           child: Material(
+                            color: TodoColors.transparent,
                             child: ReactiveForm(
                               formGroup: store.form,
                               child: TextInput(
                                 onTap: (() => store.setStateInitial()),
-                                formControl: store.itemTaskControl,
+                                formControl: store.itemTarefaControl,
                                 hintText: 'Adicionar novo item',
                                 onSubmitted: () => store.addItensTaskList(),
                                 validationMessages: const {
@@ -220,7 +221,7 @@ class _NovaTarefaPageState extends TDModularState<NovaTarefaPage, NovaTarefaStor
               sizes: 'col-md-3 col-6',
               child: Button(
                 text: 'Salvar',
-                onPressed: () => store.saveCardsTarefas(),
+                onPressed: store.tituloTarefa != 'Criar tarefa' ? () => store.saveCardsTarefas(context) : null,
               ).primario),
         ],
       ),

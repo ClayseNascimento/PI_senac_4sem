@@ -145,8 +145,7 @@ class _EditarTarefaPageState extends TDModularState<EditarTarefaPage, EditarTare
                                                     (store.indexItem == e.idItem ||
                                                         store.indexItem == store.listItens.indexOf(e)),
                                                 child: InkWell(
-                                                  // onTap: () => store.deleteItemTask(context, e),
-                                                  onTap: () {},
+                                                  onTap: () => store.deleteItemTask(context, e),
                                                   child: const Icon(
                                                     FontAwesomeIcons.trash,
                                                     color: TodoColors.vermelho,
@@ -208,7 +207,7 @@ class _EditarTarefaPageState extends TDModularState<EditarTarefaPage, EditarTare
               sizes: 'col-md-3 col-6',
               child: Button(
                 text: 'Salvar',
-                onPressed: () => store.saveCardsTarefas(widget.tarefa.idTarefa),
+                onPressed: () => store.saveCardsTarefas(context, widget.tarefa.idTarefa),
               ).primario),
         ],
       ),

@@ -8,6 +8,7 @@ class TodoColors {
   static const cinza = TodoColor(0xFF0AAAAAA);
   static const verde = TodoColor(0xFF06CC48);
   static const vermelho = TodoColor(0xFFFF322B);
+  static const vermelhoSuave = Color.fromARGB(232, 247, 74, 68);
   static const preto = TodoColor(0xFF000000);
 }
 

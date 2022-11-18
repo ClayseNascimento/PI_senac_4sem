@@ -8,4 +8,5 @@ abstract class IToDoListRepository {
   Future<Either<Failure, bool>> criarTarefa(CriarTarefaInput input);
   Future<Either<Failure, List<Tarefas>>> getTarefa(int idUsuario);
   Future<Either<Failure, bool>> alterarTarefa(AlterarTarefaInput input);
+  Future<Either<Failure, bool>> excluirItemTarefa(int idItem);
 }
