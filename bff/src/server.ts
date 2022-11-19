@@ -121,8 +121,6 @@ route.post('/alterarTarefa', async (req: Request, res: Response) => {
       sql_Insert_command = `insert into tarefas_itens (desc_item, concluido, id_tarefa)
                             ${ values }`
 
-      console.log(sql_Insert_command);
-
       await client.query(sql_Insert_command)
         .catch(async e => {
           await client.query(`rollback;`)

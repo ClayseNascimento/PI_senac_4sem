@@ -117,7 +117,7 @@ class _HomePageState extends TDModularState<HomePage, HomeStore> {
                   autoPlayCurve: Curves.easeInBack,
                   height: 250,
                   enlargeCenterPage: false,
-                  enableInfiniteScroll: true,
+                  enableInfiniteScroll: false,
                   autoPlay: false,
                   onPageChanged: (index, reason) {
                     setState(() {
@@ -186,15 +186,18 @@ class _HomePageState extends TDModularState<HomePage, HomeStore> {
           ),
         ),
         const SizedBox(height: 24),
-        Text(
-          'Você não possui tarefas.',
-          textAlign: TextAlign.center,
-          style: GoogleFonts.roboto(
-            fontSize: 32,
-            fontWeight: FontWeight.w400,
-            color: TodoColors.azul,
-            decoration: TextDecoration.none,
-            fontStyle: FontStyle.italic,
+        Padding(
+          padding: const EdgeInsets.only(bottom: 24),
+          child: Text(
+            'Você não possui tarefas.',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.roboto(
+              fontSize: 32,
+              fontWeight: FontWeight.w400,
+              color: TodoColors.azul,
+              decoration: TextDecoration.none,
+              fontStyle: FontStyle.italic,
+            ),
           ),
         ),
       ],

@@ -78,7 +78,7 @@ class Navbar extends StatelessWidget {
           shape: const CircleBorder(),
           color: TodoColors.branco,
           child: InkWell(
-            onTap: () => Modular.to.navigate(HomeModule.home), //TODO: Passar página por parametro
+            onTap: () => Modular.to.navigate(HomeModule.home),
             customBorder: const CircleBorder(),
             borderRadius: BorderRadius.circular(10),
             child: const Icon(

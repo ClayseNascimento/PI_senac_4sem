@@ -1,6 +1,4 @@
 
-import 'dart:developer';
-
 import 'package:todolist/src/@shared/errors/error_constants.dart';
 import 'package:todolist/src/@shared/errors/exceptions/exceptions.dart';
 import 'package:todolist/src/@shared/interceptors/http_client.dart';
@@ -39,8 +37,6 @@ class ToDoListDatasource implements IToDoListDatasource {
   @override
   Future<List<TarefasModel>> getTarefas(int idUsuario) async {
     try {
-    print('try datasourece');
-
       final response = await _httpClient.get('/tarefas/$idUsuario');
       if (response.statusCode == 200 && response.data != null) {
         final data = (response.data);
@@ -52,15 +48,11 @@ class ToDoListDatasource implements IToDoListDatasource {
         }
         return lista;
       } else {
-    print('else try datasourece');
-
         throw RemoteException(message: '${response.data} ${response.statusCode}');
       }
     } on RemoteException catch (exception) {
-      print(exception.message ?? 'erro aqui');
       throw RemoteException(message: exception.message);
     } catch (error) {
-      print(error.toString());
       throw RemoteException(message: msgErrConnection);
     }
   }

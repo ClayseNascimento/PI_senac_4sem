@@ -25,6 +25,7 @@ class ButtonsBar extends StatelessWidget {
   _buildButtonBarMobile(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
+      constraints: const BoxConstraints(maxHeight: 96),
       decoration: const BoxDecoration(border: Border(top: BorderSide(color: TodoColors.azul))),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),

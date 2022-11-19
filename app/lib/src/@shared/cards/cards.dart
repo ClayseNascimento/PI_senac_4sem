@@ -24,6 +24,7 @@ class Cards extends StatefulWidget {
 class _CardsState extends State<Cards> {
   @override
   Widget build(BuildContext context) {
+    final smallScreen = MediaQuery.of(context).size.width;
     return Container(
       height: widget.height,
       alignment: Alignment.bottomCenter,
@@ -41,7 +42,7 @@ class _CardsState extends State<Cards> {
                 widget.title,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.roboto(
-                  fontSize: 40,
+                  fontSize: smallScreen <= 400 ? 20 : 40,
                   fontWeight: FontWeight.w500,
                   color: TodoColors.azul,
                   decoration: TextDecoration.none,
@@ -51,7 +52,7 @@ class _CardsState extends State<Cards> {
                 widget.subtitle,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.roboto(
-                  fontSize: 22,
+                  fontSize: smallScreen <= 400 ? 12 :  22,
                   fontWeight: FontWeight.w500,
                   color: TodoColors.azul,
                   decoration: TextDecoration.none,
