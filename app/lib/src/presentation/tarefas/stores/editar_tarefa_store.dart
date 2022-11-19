@@ -196,7 +196,7 @@ class EditarTarefaStore extends TDStore<List<ItemTarefa>> {
     }
 
     final AlterarTarefaInput input = AlterarTarefaInput(
-      idUsuario: 02,
+      idUsuario: 1,
       idTarefa: idTarefa,
       itens: listItens,
     );

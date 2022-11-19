@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:todolist/src/@shared/errors/error_constants.dart';
 import 'package:todolist/src/@shared/errors/exceptions/exceptions.dart';
 import 'package:todolist/src/data/datasources/to_do_list_datasource.dart';
@@ -30,14 +32,20 @@ class ToDoListRepository implements IToDoListRepository {
   @override
   Future<Either<Failure, List<Tarefas>>> getTarefa(int idUsuario) async {
     try {
+    print('try repository');
+
       final response = await _datasource.getTarefas(idUsuario);
       final List<Tarefas> lista = response.map((e) => e.toDomain()).toList();
 
       return Right(lista);
 
     } on RemoteException catch (exception) {
+    print('catch repository');
+
       return Left(SaveFailure(message: exception.message));
     } catch (error) {
+    print('catch2 repository');
+
       return Left(SaveFailure(message: msgErrConnection));
     }
   }

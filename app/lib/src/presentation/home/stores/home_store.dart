@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:todolist/src/@shared/errors/failures/failures.dart';
 import 'package:todolist/src/@shared/state/stores.dart';
 import 'package:todolist/src/domain/entities/tarefas.dart';
 import 'package:todolist/src/domain/usecases/get_tarefas_usecase.dart';
@@ -19,11 +22,18 @@ class HomeStore extends TDStore<List<Tarefas>> {
 
   loadTarefas() async {
     setLoading();
-    final result = await _getTarefaUsecase.call(2);
+
+    print('store home');
+
+    final result = await _getTarefaUsecase.call(1);
 
     result.fold((failure) async {
+      print(failure.message ?? 'mensagem');
       await setLoading();
       await setError('Erro ao carregar tarefas... Tente novamente.');
+      if (failure is EmptyListFailure) {
+        setEmpty([]);
+      }
     }, (tarefas) async {
       if (tarefas.isNotEmpty) {
         listTarefas = tarefas;

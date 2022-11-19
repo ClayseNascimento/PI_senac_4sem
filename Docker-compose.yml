@@ -1,43 +1,43 @@
 version: '3.1'
 services:
-  db:
-    image: postgres
-    container_name: db_postgres
-    restart: always
-    networks:
-      - pi-network
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: todolist
-    volumes:
-       - ./bff/data:/var/lib/postgresql/data
-       - ./bff/initial_scripts.sql:/docker-entrypoint-initdb.d/initial_scripts.sql
-    ports:
-    - 5432:5432
+  # db:
+  #   image: postgres
+  #   container_name: db_postgres
+  #   restart: always
+  #   networks:
+  #     - pi-network
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #     POSTGRES_DB: todolist
+  #   volumes:
+  #      - ./bff/data:/var/lib/postgresql/data
+  #      - ./bff/initial_scripts.sql:/docker-entrypoint-initdb.d/initial_scripts.sql
+  #   ports:
+  #   - 5432:5432
 
-  bff:
-    build:
-      context: ./bff
-    container_name: bff_node
-    networks:
-      - pi-network
-    tty: true
-    entrypoint: dockerize -wait tcp://db_postgres:5432 -timeout 60s docker-entrypoint.sh yarn start:prod
-    ports:
-      - "3333:3333"
+  # bff:
+  #   build:
+  #     context: ./bff
+  #   container_name: bff_node
+  #   networks:
+  #     - pi-network
+  #   tty: true
+  #   entrypoint: dockerize -wait tcp://db_postgres:5432 -timeout 120s docker-entrypoint.sh yarn start:prod
+  #   ports:
+  #     - "3333:3333"
 
   app:
     build:
       context: ./app
     container_name: app_flutter
+    volumes:
+       - ./app/build/web:/usr/share/nginx/html
     networks:
       - pi-network
     tty: true
-    # entrypoint: dockerize -wait tcp://bff_node:3333 -timeout 60s docker-entrypoint.sh flutter run
-    command: flutter run ./lib/main.dart
     ports:
-      - "8080:8080"
+      - "3005:80"
 
 networks:
   pi-network:

@@ -48,12 +48,11 @@ class DioHttpClient implements IHttpClient {
 
   void _onCreate() {
     BaseOptions options = BaseOptions(
-      baseUrl: "http://localhost:3333",
-      connectTimeout: 60000,
-      receiveTimeout: 60000,
-      sendTimeout: 60000,
-      headers: {"content-type": 'application/json'}
-    );
+        baseUrl: "http://localhost:3333",
+        connectTimeout: 60000,
+        receiveTimeout: 60000,
+        sendTimeout: 60000,
+        headers: {"content-type": 'application/json'});
     _instance = Dio(options);
   }
 

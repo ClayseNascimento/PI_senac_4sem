@@ -33,7 +33,7 @@ class NovaTarefaStore extends TDStore<CriarTarefaInput> {
   String tituloTarefa = 'Criar tarefa';
   CriarTarefaInput tarefa = CriarTarefaInput(
     tituloTarefa: 'Criar Tarefa',
-    idUsuario: 2,
+    idUsuario: 1,
     itens: const [],
   );
 
@@ -66,7 +66,7 @@ class NovaTarefaStore extends TDStore<CriarTarefaInput> {
 
     tarefa = CriarTarefaInput(
       tituloTarefa: tituloTarefa,
-      idUsuario: 2,
+      idUsuario: 1,
       itens: const [],
     );
 
@@ -215,7 +215,7 @@ class NovaTarefaStore extends TDStore<CriarTarefaInput> {
 
 
     final CriarTarefaInput input = CriarTarefaInput(
-      idUsuario: 02,
+      idUsuario: 1,
       tituloTarefa: tituloTarefa,
       itens: listItens,
     );

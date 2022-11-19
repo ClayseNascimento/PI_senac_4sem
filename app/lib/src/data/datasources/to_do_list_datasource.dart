@@ -1,3 +1,6 @@
+
+import 'dart:developer';
+
 import 'package:todolist/src/@shared/errors/error_constants.dart';
 import 'package:todolist/src/@shared/errors/exceptions/exceptions.dart';
 import 'package:todolist/src/@shared/interceptors/http_client.dart';
@@ -36,6 +39,8 @@ class ToDoListDatasource implements IToDoListDatasource {
   @override
   Future<List<TarefasModel>> getTarefas(int idUsuario) async {
     try {
+    print('try datasourece');
+
       final response = await _httpClient.get('/tarefas/$idUsuario');
       if (response.statusCode == 200 && response.data != null) {
         final data = (response.data);
@@ -47,18 +52,22 @@ class ToDoListDatasource implements IToDoListDatasource {
         }
         return lista;
       } else {
-        throw RemoteException(message: response.data);
+    print('else try datasourece');
+
+        throw RemoteException(message: '${response.data} ${response.statusCode}');
       }
     } on RemoteException catch (exception) {
+      print(exception.message ?? 'erro aqui');
       throw RemoteException(message: exception.message);
     } catch (error) {
+      print(error.toString());
       throw RemoteException(message: msgErrConnection);
     }
   }
 
   @override
   Future<bool> alterarTarefa(AlterarTarefaInputModel input) async {
-     try {
+    try {
       final response = await _httpClient.post('/alterarTarefa', data: input.toJson());
       if (response.statusCode == 201 && response.data != null && response.data['sucesso']) {
         return true;
@@ -73,8 +82,8 @@ class ToDoListDatasource implements IToDoListDatasource {
   }
 
   @override
-  Future<bool> excluirItemTarefa(int idItem) async{
-       try {
+  Future<bool> excluirItemTarefa(int idItem) async {
+    try {
       final response = await _httpClient.delete('/itemTarefa/$idItem');
       if (response.statusCode == 200 && response.data != null && response.data['sucesso']) {
         return true;

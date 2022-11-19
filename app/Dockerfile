@@ -24,22 +24,15 @@ COPY . ./
 RUN flutter pub upgrade
 RUN flutter pub get
 
-RUN flutter config --no-analytics --enable-web --no-enable-android --no-enable-ios
-RUN flutter precache --web
-RUN flutter build web
+# RUN flutter config --no-analytics --enable-web --no-enable-android --no-enable-ios
+# RUN flutter precache --web
+# RUN flutter run
 
-RUN flutter create .
-RUN cd .
-
-# ENV DOCKERIZE_VERSION v0.6.1
-# RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-#     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-#     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-
-EXPOSE 8080
+# RUN flutter create --platforms web dummy && rm -rf dummy
+RUN flutter build web --web-renderer html
 
 # Stage 2 - Create the run-time image
-# FROM nginx:1.21.1-alpine
-# COPY --from=build-env /app/build/web /usr/share/nginx/html
+FROM nginx:1.21.1-alpine
+COPY --from=build-env /usr/src/app/build/web /usr/share/nginx/html
 
-CMD [ "flutter", "run" ]
+EXPOSE 80
