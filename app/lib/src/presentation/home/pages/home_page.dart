@@ -73,7 +73,18 @@ class _HomePageState extends TDModularState<HomePage, HomeStore> {
             store.obx(
               (tarefas) => _isState(context, tarefas!),
               onEmpty: _isEmpty(),
-              onError: (error) => const Center(child: Text('erro')),
+              onError: (error) => Center(
+                child: Text(
+                  error!,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.roboto(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w400,
+                    color: TodoColors.azul,
+                    decoration: TextDecoration.none,
+                  ),
+                ),
+              ),
               onLoading: _isLoading(),
             )
           ],

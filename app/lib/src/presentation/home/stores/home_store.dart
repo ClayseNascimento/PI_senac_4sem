@@ -21,10 +21,13 @@ class HomeStore extends TDStore<List<Tarefas>> {
     setLoading();
     final result = await _getTarefaUsecase.call(2);
 
-    result.fold((failure) => failure, (tarefas) async {
+    result.fold((failure) async {
+      await setLoading();
+      await setError('Erro ao carregar tarefas... Tente novamente.');
+    }, (tarefas) async {
       if (tarefas.isNotEmpty) {
         listTarefas = tarefas;
-        return setState(listTarefas);
+        setState(listTarefas);
       }
       setEmpty([]);
     });
