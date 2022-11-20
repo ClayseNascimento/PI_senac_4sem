@@ -9,6 +9,8 @@ O sistema permite a inclusão, alteração e exclusão de tarefas, possibilitant
 
 📍 [Pré-requisitos](#pré-requisitos)
 
+📍 [Funcionalidades](#funcionalidades)
+
 📍 [Como rodar a aplicação](#como-rodar-a-aplicação)
 
 📍 [Autores](#autores)
