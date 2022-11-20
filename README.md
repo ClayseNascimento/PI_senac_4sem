@@ -27,6 +27,12 @@ O sistema permite a inclusão, alteração e exclusão de tarefas, possibilitant
 ## 📋 Pré-requisitos
 É necessário ter o docker instalado na máquina, conforme site oficial: https://docs.docker.com/desktop/
 
+## 🔨 Funcionalidades
+A aplicação permite a inclusão, alteração e exclusão de itens.
+![](img/add_tarefa.gif)
+![](img/add_item.gif)
+![](img/editar_item.gif)
+
 ## ▶️ Como rodar a aplicação
 Após baixar o projeto você deverá abrir o terminal na pasta raíz do projeto e rodar o comando:
 
