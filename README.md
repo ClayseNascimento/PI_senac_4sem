@@ -6,15 +6,22 @@ O sistema permite a inclusão, alteração e exclusão de tarefas, possibilitant
 
 ## ✔️ Tópicos
 📍 [Construído com](#construído-com)
+
 📍 [Pré-requisitos](#pré-requisitos)
+
 📍 [Como rodar a aplicação](#como-rodar-a-aplicação)
+
 📍 [Autores](#autores)
 
 ## 🛠️ Construído com
 🔹 Flutter/Dart
+
 🔹 Node.js
+
 🔹 TypeScript
+
 🔹 PostgreSql
+
 🔹 Docker
 
 ### 📋 Pré-requisitos
