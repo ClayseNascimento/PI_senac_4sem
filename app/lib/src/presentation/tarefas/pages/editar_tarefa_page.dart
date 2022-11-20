@@ -27,8 +27,9 @@ class EditarTarefaPage extends StatefulWidget {
 
 class _EditarTarefaPageState extends TDModularState<EditarTarefaPage, EditarTarefaStore> {
   @override
-  void initState()  {
-    store.getItensTarefa(widget.tarefa.itens);
+  void initState() {
+    store.setLoading();
+    store.listItens = widget.tarefa.itens;
     store.setStateInitial();
     super.initState();
   }
@@ -48,7 +49,17 @@ class _EditarTarefaPageState extends TDModularState<EditarTarefaPage, EditarTare
           ),
           store.obx((tarefas) => Expanded(child: _buildBody()),
               onEmpty: const Center(child: Text('vazio')),
-              onError: (error) => const Center(child: Text('erro')),
+               onError: (error) => Center(
+                child: Text(
+                  error!,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.roboto(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w400,
+                    color: TodoColors.azul,
+                    decoration: TextDecoration.none,
+                  ),
+                )),
               onLoading: _isLoading())
         ],
       ),

@@ -27,25 +27,16 @@ class EditarTarefaStore extends TDStore<List<ItemTarefa>> {
   FormControl<String> get itemTaskControl => form.control(NovaTarefaFormFields.itemTask) as FormControl<String>;
 
   // ------------ Estado da página ---------------------
-
-  // String nameTask = 'Criar tarefa';
   List<ItemTarefa> listItens = [];
   bool showOptionsItens = false;
   bool showEllipsis = true;
   int indexItem = -1;
-
   RxNotifier isChecked = RxNotifier<bool>(false);
 
   setStateInitial() {
     setLoading();
     indexItem = -1;
     showOptionsItens = false;
-    setState(listItens);
-  }
-
-  // ------ Armazenar localmente informações da tarefa -----
-  getItensTarefa(List<ItemTarefa> itens) {
-    listItens = itens;
     setState(listItens);
   }
 
@@ -186,7 +177,9 @@ class EditarTarefaStore extends TDStore<List<ItemTarefa>> {
 
   // ----- Função para salvar alterações do card de tarefas -----
   saveCardsTarefas(BuildContext context, int idTarefa) async {
+    setLoading();
     if (listItens.isEmpty) {
+      setState(listItens);
       return ToDoDialog.singleButton(
         context,
         title: 'Atenção',
@@ -203,10 +196,14 @@ class EditarTarefaStore extends TDStore<List<ItemTarefa>> {
 
     final result = await _alterarTarefaUsecase.call(input);
 
-    result.fold((failure) => false, (save) => true);
+    result.fold((failure) async {
+      await setLoading();
+      await setError('Erro ao salvar tarefas... Tente novamente.');
+    }, (save) async => true);
 
-    Modular.to.pushNamed(HomeModule.home);
-    setState(listItens);
+    setStateInitial();
+
+    Modular.to.navigate(HomeModule.home);
   }
 }
 

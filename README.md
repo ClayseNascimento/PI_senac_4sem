@@ -1,7 +1,7 @@
 # Projeto Integrador: Desenvolvimento de Sistemas Orientado a Dispositivos Móveis e Baseados na Web
 
 Projeto desenvolvido para disciplina de Projeto Integrador do curso de Análise e Desenvolvimento de Sistemas do SENAC - 4º Semestre - EAD.
-O To-Do List é uma aplicação para auxiliar o usuário a organizar as tarefas do dia a dia.
+O To-Do List é uma aplicação web, responsiva para dispositivos pequenos, que visa auxiliar o usuário a organizar as tarefas do dia a dia.
 O sistema permite a inclusão, alteração e exclusão de tarefas, possibilitanto uma melhor coordenação das atividades diárias.
 
 ## ✔️ Tópicos

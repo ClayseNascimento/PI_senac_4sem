@@ -14,8 +14,6 @@ ENV PATH="${PATH}:/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/b
 
 # Run flutter doctor
 RUN flutter doctor -v
-# RUN flutter channel master
-# RUN flutter upgrade
 
 # Copy files to container and build
 WORKDIR /usr/src/app
@@ -24,11 +22,6 @@ COPY . ./
 RUN flutter pub upgrade
 RUN flutter pub get
 
-# RUN flutter config --no-analytics --enable-web --no-enable-android --no-enable-ios
-# RUN flutter precache --web
-# RUN flutter run
-
-# RUN flutter create --platforms web dummy && rm -rf dummy
 RUN flutter build web --web-renderer html
 
 # Stage 2 - Create the run-time image

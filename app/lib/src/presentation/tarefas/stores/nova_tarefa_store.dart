@@ -51,6 +51,15 @@ class NovaTarefaStore extends TDStore<CriarTarefaInput> {
     setState(tarefa);
   }
 
+  resetState() {
+    CriarTarefaInput(
+      tituloTarefa: 'Criar Tarefa',
+      idUsuario: 1,
+      itens: const [],
+    );
+    setState(tarefa);
+  }
+
 // -------- Função para adicionar título da tarefa --------
   addTituloTarefa() {
     bool isValid = true;
@@ -203,7 +212,7 @@ class NovaTarefaStore extends TDStore<CriarTarefaInput> {
 
   // ----- Função para salvar um card de tarefas -----
   saveCardsTarefas(BuildContext context) async {
-      if (listItens.isEmpty) {
+    if (listItens.isEmpty) {
       return ToDoDialog.singleButton(
         context,
         title: 'Atenção',
@@ -211,8 +220,6 @@ class NovaTarefaStore extends TDStore<CriarTarefaInput> {
         buttonCenterOnTap: () => Modular.to.pop(),
       ).show();
     }
-
-
 
     final CriarTarefaInput input = CriarTarefaInput(
       idUsuario: 1,
@@ -225,6 +232,7 @@ class NovaTarefaStore extends TDStore<CriarTarefaInput> {
     result.fold((failure) => false, (save) => true);
 
     Modular.to.pushNamed(HomeModule.home);
+    resetState();
   }
 }
 
