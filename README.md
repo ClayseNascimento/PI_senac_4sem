@@ -24,12 +24,8 @@ O sistema permite a inclusão, alteração e exclusão de tarefas, possibilitant
 
 🔹 Docker
 
-### 📋 Pré-requisitos
-É necessário ter o docker instalado na máquina.
-
-```
-https://docs.docker.com/desktop/
-```
+## 📋 Pré-requisitos
+É necessário ter o docker instalado na máquina, conforme site oficial: https://docs.docker.com/desktop/
 
 ## ▶️ Como rodar a aplicação
 Após baixar o projeto você deverá abrir o terminal na pasta raíz do projeto e rodar o comando:
