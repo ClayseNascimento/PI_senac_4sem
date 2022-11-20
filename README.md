@@ -10,7 +10,6 @@ O sistema permite a inclusão, alteração e exclusão de tarefas, possibilitant
 📍 [Como rodar a aplicação](#como-rodar-a-aplicação)
 📍 [Autores](#autores)
 
-
 ## 🛠️ Construído com
 🔹 Flutter/Dart
 🔹 Node.js
@@ -23,7 +22,6 @@ O sistema permite a inclusão, alteração e exclusão de tarefas, possibilitant
 
 ```
 https://docs.docker.com/desktop/
-
 ```
 
 ## ▶️ Como rodar a aplicação
@@ -31,21 +29,19 @@ Após baixar o projeto você deverá abrir o terminal na pasta raíz do projeto 
 
 ```
 docker compose up --build
-
 ```
 
 Após a inicialização de todos os serviços/containers (app_flutter, bff_node e db_postgres) você deverá acessar a url:
 
 ```
 http://localhost:3005/#/home/
-
 ```
 
 ## ✒️ Autores
-Alexandre Silva Lucindo
-Andrea Pereira dos Santos
-Clayse Alves Silva do Nascimento
-Edvaldo Delarissia
-Felipe Bello Labiapari
-Sharllana Paolla Oliveira Maximo
-Sergio Rodrigo Coelho Rios
+- Alexandre Silva Lucindo
+- Andrea Pereira dos Santos
+- Clayse Alves Silva do Nascimento
+- Edvaldo Delarissia
+- Felipe Bello Labiapari
+- Sharllana Paolla Oliveira Maximo
+- Sergio Rodrigo Coelho Rios
