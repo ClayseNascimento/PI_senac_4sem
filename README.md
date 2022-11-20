@@ -53,6 +53,7 @@ http://localhost:3005/#/home/
 ```
 
 ## ✒️ Autores
+#### grupo 23
 - Alexandre Silva Lucindo
 - Andrea Pereira dos Santos
 - Clayse Alves Silva do Nascimento
